@@ -25,9 +25,6 @@
     <Filter Include="Source files\Device-specific files\HAL">
       <UniqueIdentifier>{e4f64c3e-b684-4a87-ac5b-54ef14d5cc63}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source files\Device-specific files\SystemInit">
-      <UniqueIdentifier>{c6777b69-a304-479a-87f7-4d3fa3853668}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header files\Inc">
       <UniqueIdentifier>{581c2363-7076-4701-9ae0-e3a6c14575b9}</UniqueIdentifier>
     </Filter>
@@ -46,8 +43,16 @@
     <Filter Include="VisualGDB settings">
       <UniqueIdentifier>{72a31df3-3601-4b74-b8e8-53633d601ce7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source files\Device-specific files\FreeRTOS">
+      <UniqueIdentifier>{3614a1e2-dde3-4102-a362-2c9356f96297}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header files\Device-specific files\FreeRTOS">
+      <UniqueIdentifier>{5e98e7d5-876e-4ac6-8f0c-d44b665a6a95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Makefile" />
+  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\adc.c">
       <Filter>Source files\Src</Filter>
@@ -258,9 +263,6 @@
     </ClCompile>
     <ClCompile Include="$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Src\stm32f1xx_ll_utils.c">
       <Filter>Source files\Device-specific files\HAL</Filter>
-    </ClCompile>
-    <ClCompile Include="$(BSP_ROOT)\STM32F1xxxx\CMSIS_HAL\Device\ST\STM32F1xx\Source\Templates\system_stm32f1xx.c">
-      <Filter>Source files\Device-specific files\SystemInit</Filter>
     </ClCompile>
     <ClInclude Include="Inc\adc.h">
       <Filter>Header files\Inc</Filter>
@@ -556,5 +558,89 @@
     <None Include="stm32.xml">
       <Filter>VisualGDB settings</Filter>
     </None>
+    <None Include="$(BSP_ROOT)\FreeRTOS\License\license.txt">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </None>
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\croutine.c">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\event_groups.c">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\list.c">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\queue.c">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </ClCompile>
+    <None Include="$(BSP_ROOT)\FreeRTOS\Source\readme.txt">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </None>
+    <None Include="$(BSP_ROOT)\FreeRTOS\Source\st_readme.txt">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </None>
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\tasks.c">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\timers.c">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.c">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\portable\GCC\ARM_CM3\port.c">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\portable\MemMang\heap_4.c">
+      <Filter>Source files\Device-specific files\FreeRTOS</Filter>
+    </ClCompile>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\croutine.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\deprecated_definitions.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\event_groups.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\FreeRTOS.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\list.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\mpu_prototypes.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\mpu_wrappers.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\portable.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\projdefs.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\queue.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\semphr.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\StackMacros.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\task.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\timers.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\portable\GCC\ARM_CM3\portmacro.h">
+      <Filter>Header files\Device-specific files\FreeRTOS</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

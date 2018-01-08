@@ -104,6 +104,9 @@
 #ifndef __GCC_ATOMIC_CHAR_LOCK_FREE
 #define __GCC_ATOMIC_CHAR_LOCK_FREE 2
 #endif
+#ifndef USE_HAL_LEGACY
+#define USE_HAL_LEGACY 1
+#endif
 #ifndef __GCC_IEC_559
 #define __GCC_IEC_559 0
 #endif
@@ -460,6 +463,9 @@
 #ifndef __UACCUM_MIN__
 #define __UACCUM_MIN__ 0.0UK
 #endif
+#ifndef flash_layout
+#define flash_layout 1
+#endif
 #ifndef __UACCUM_IBIT__
 #define __UACCUM_IBIT__ 16
 #endif
@@ -501,6 +507,9 @@
 #endif
 #ifndef __GXX_ABI_VERSION
 #define __GXX_ABI_VERSION 1010
+#endif
+#ifndef STM32F103xB
+#define STM32F103xB 1
 #endif
 #ifndef __UTA_FBIT__
 #define __UTA_FBIT__ 64
@@ -610,6 +619,9 @@
 #ifndef __GCC_ATOMIC_INT_LOCK_FREE
 #define __GCC_ATOMIC_INT_LOCK_FREE 2
 #endif
+#ifndef USE_FREERTOS
+#define USE_FREERTOS 1
+#endif
 #ifndef __FLOAT_WORD_ORDER__
 #define __FLOAT_WORD_ORDER__ __ORDER_LITTLE_ENDIAN__
 #endif
@@ -654,6 +666,9 @@
 #endif
 #ifndef __UDQ_FBIT__
 #define __UDQ_FBIT__ 64
+#endif
+#ifndef DEBUG
+#define DEBUG 1
 #endif
 #ifndef __INT8_TYPE__
 #define __INT8_TYPE__ signed char
@@ -1159,13 +1174,17 @@
 #ifndef __ATOMIC_RELEASE
 #define __ATOMIC_RELEASE 3
 #endif
-#ifndef DEBUG
-#define DEBUG 1
-#endif
 #endif
 
 // --- Include directories begin --- //
 //.
+//$(BSP_ROOT)/FreeRTOS/Source/CMSIS_RTOS
+//$(BSP_ROOT)/FreeRTOS/Source/include
+//$(BSP_ROOT)/FreeRTOS/Source/Portable/gcc/ARM_CM3
+//$(BSP_ROOT)/STM32F1xxxx/STM32F1xx_HAL_Driver/Inc
+//$(BSP_ROOT)/STM32F1xxxx/STM32F1xx_HAL_Driver/Inc/Legacy
+//$(BSP_ROOT)/STM32F1xxxx/CMSIS_HAL/Device/ST/STM32F1xx/Include
+//$(BSP_ROOT)/STM32F1xxxx/CMSIS_HAL/Include
 //$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0
 //$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0\arm-eabi\thumb\cortex_m3
 //$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0\backward
@@ -1173,6 +1192,7 @@
 //$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\6.2.0\include-fixed
 //$(TOOLCHAIN_ROOT)\arm-eabi\sys-include
 //$(TOOLCHAIN_ROOT)\arm-eabi\include
+//Inc
 // --- Include directories end --- //
 
 

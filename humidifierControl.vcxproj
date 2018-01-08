@@ -46,9 +46,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeIncludeSearchPath>.;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0\arm-eabi\thumb\cortex_m3;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0\backward;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\6.2.0\include;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\6.2.0\include-fixed;$(TOOLCHAIN_ROOT)\arm-eabi\sys-include;$(TOOLCHAIN_ROOT)\arm-eabi\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>.;$(BSP_ROOT)\FreeRTOS\Source\CMSIS_RTOS;$(BSP_ROOT)\FreeRTOS\Source\include;$(BSP_ROOT)\FreeRTOS\Source\Portable\gcc\ARM_CM3;$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Inc;$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Inc\Legacy;$(BSP_ROOT)\STM32F1xxxx\CMSIS_HAL\Device\ST\STM32F1xx\Include;$(BSP_ROOT)\STM32F1xxxx\CMSIS_HAL\Include;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0\arm-eabi\thumb\cortex_m3;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0\backward;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\6.2.0\include;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\6.2.0\include-fixed;$(TOOLCHAIN_ROOT)\arm-eabi\sys-include;$(TOOLCHAIN_ROOT)\arm-eabi\include;Inc;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Debug.h;$(VISUALGDB_DIR)\gcc_compat.h;$(BSP_ROOT)\stm32_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
-    <NMakePreprocessorDefinitions>__VisualGDB_CFG_Debug;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /rebuild "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeReBuildCommandLine>
@@ -56,6 +55,7 @@
     <IncludePath />
     <ReferencePath />
     <LibraryPath />
+    <NMakePreprocessorDefinitions>__VisualGDB_CFG_Debug;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeIncludeSearchPath>.;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0\arm-eabi\thumb\cortex_m3;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0\backward;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\6.2.0\include;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\6.2.0\include-fixed;$(TOOLCHAIN_ROOT)\arm-eabi\sys-include;$(TOOLCHAIN_ROOT)\arm-eabi\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
@@ -148,7 +148,6 @@
     <ClCompile Include="$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Src\stm32f1xx_ll_usart.c" />
     <ClCompile Include="$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Src\stm32f1xx_ll_usb.c" />
     <ClCompile Include="$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Src\stm32f1xx_ll_utils.c" />
-    <ClCompile Include="$(BSP_ROOT)\STM32F1xxxx\CMSIS_HAL\Device\ST\STM32F1xx\Source\Templates\system_stm32f1xx.c" />
     <ClInclude Include="Inc\adc.h" />
     <ClInclude Include="Inc\FreeRTOSConfig.h" />
     <ClInclude Include="Inc\gpio.h" />
@@ -248,5 +247,33 @@
     <None Include="humidifierControl-Debug.vgdbsettings" />
     <None Include="humidifierControl-Release.vgdbsettings" />
     <None Include="stm32.xml" />
+    <None Include="$(BSP_ROOT)\FreeRTOS\License\license.txt" />
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\croutine.c" />
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\event_groups.c" />
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\list.c" />
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\queue.c" />
+    <None Include="$(BSP_ROOT)\FreeRTOS\Source\readme.txt" />
+    <None Include="$(BSP_ROOT)\FreeRTOS\Source\st_readme.txt" />
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\tasks.c" />
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\timers.c" />
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.c" />
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\portable\GCC\ARM_CM3\port.c" />
+    <ClCompile Include="$(BSP_ROOT)\FreeRTOS\Source\portable\MemMang\heap_4.c" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\croutine.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\deprecated_definitions.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\event_groups.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\FreeRTOS.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\list.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\mpu_prototypes.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\mpu_wrappers.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\portable.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\projdefs.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\queue.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\semphr.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\StackMacros.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\task.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\include\timers.h" />
+    <ClInclude Include="$(BSP_ROOT)\FreeRTOS\Source\portable\GCC\ARM_CM3\portmacro.h" />
   </ItemGroup>
 </Project>
