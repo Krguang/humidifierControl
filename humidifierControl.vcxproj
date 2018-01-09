@@ -79,9 +79,13 @@
   <ItemGroup />
   <ItemGroup>
     <ClCompile Include="Src\adc.c" />
+    <ClCompile Include="Src\dataProcessing.c" />
+    <ClCompile Include="Src\dma.c" />
     <ClCompile Include="Src\freertos.c" />
     <ClCompile Include="Src\gpio.c" />
     <ClCompile Include="Src\main.c" />
+    <ClCompile Include="Src\modbusMaster.c" />
+    <ClCompile Include="Src\modbusSlave.c" />
     <ClCompile Include="Src\stm32f1xx_hal_msp.c" />
     <ClCompile Include="Src\stm32f1xx_hal_timebase_TIM.c" />
     <ClCompile Include="Src\stm32f1xx_it.c" />
@@ -149,9 +153,13 @@
     <ClCompile Include="$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Src\stm32f1xx_ll_usb.c" />
     <ClCompile Include="$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Src\stm32f1xx_ll_utils.c" />
     <ClInclude Include="Inc\adc.h" />
+    <ClInclude Include="Inc\dataProcessing.h" />
+    <ClInclude Include="Inc\dma.h" />
     <ClInclude Include="Inc\FreeRTOSConfig.h" />
     <ClInclude Include="Inc\gpio.h" />
     <ClInclude Include="Inc\main.h" />
+    <ClInclude Include="Inc\modbusMaster.h" />
+    <ClInclude Include="Inc\modbusSlave.h" />
     <ClInclude Include="Inc\stm32f1xx_hal_conf.h" />
     <ClInclude Include="Inc\stm32f1xx_it.h" />
     <ClInclude Include="Inc\tim.h" />

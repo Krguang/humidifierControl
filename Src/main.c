@@ -51,6 +51,7 @@
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 #include "adc.h"
+#include "dma.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -104,12 +105,19 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   MX_USART1_UART_Init();
   MX_TIM3_Init();
 
   /* USER CODE BEGIN 2 */
+
+  __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);    //Ê¹ÄÜ¿ÕÏÐÖÐ¶Ï
+  __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
+
+  HAL_ADCEx_Calibration_Start(&hadc1);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_ConvertedValue, 4);
 
   /* USER CODE END 2 */
 

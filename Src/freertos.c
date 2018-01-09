@@ -53,21 +53,31 @@
 
 /* USER CODE BEGIN Includes */     
 
+#include "usart.h"
+#include "modbusSlave.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
-osThreadId defaultTaskHandle;
+osThreadId initTaskHandle;
 
 /* USER CODE BEGIN Variables */
+
+osThreadId dataProcessingTaskHandle;
+osThreadId modbusSlaveTaskHandle;
+osThreadId checkKeyPressedHandle;
 
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
-void StartDefaultTask(void const * argument);
+void StartInittTask(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* USER CODE BEGIN FunctionPrototypes */
+
+void StartDataProCessingTask(void const * argument);
+void StartModbusSlaveTask(void const * argument);
+void StartCheckKeyPressedTask(void const * argument);
 
 /* USER CODE END FunctionPrototypes */
 
@@ -77,50 +87,78 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-       
+
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
+	/* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
+	/* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
+	/* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* definition and creation of initTask */
+  osThreadDef(initTask, StartInittTask, osPriorityNormal, 0, 128);
+  initTaskHandle = osThreadCreate(osThread(initTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+	/* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
+	/* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 }
 
-/* StartDefaultTask function */
-void StartDefaultTask(void const * argument)
+/* StartInittTask function */
+void StartInittTask(void const * argument)
 {
 
-  /* USER CODE BEGIN StartDefaultTask */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END StartDefaultTask */
+  /* USER CODE BEGIN StartInittTask */
+	osThreadDef(dataProCessingTask, StartDataProCessingTask, osPriorityNormal, 0, 128);
+	dataProcessingTaskHandle = osThreadCreate(osThread(dataProCessingTask), NULL);
+
+	osThreadDef(modbusSlaveTask, StartModbusSlaveTask, osPriorityNormal, 0, 128);
+	modbusSlaveTaskHandle = osThreadCreate(osThread(modbusSlaveTask), NULL);
+
+	osThreadDef(checkKeyPressedTask, StartCheckKeyPressedTask, osPriorityNormal, 0, 128);
+	checkKeyPressedHandle = osThreadCreate(osThread(checkKeyPressedTask), NULL);
+	
+	osThreadTerminate(initTaskHandle);
+  /* USER CODE END StartInittTask */
 }
 
 /* USER CODE BEGIN Application */
-     
+
+void StartDataProCessingTask(void const * argument) {
+	for (;;)
+	{
+
+		osDelay(100);
+	}
+}
+
+void StartModbusSlaveTask(void const * argument) {
+	for (;;)
+	{
+		osDelay(10);
+		modbusSlave();
+	}
+}
+
+void StartCheckKeyPressedTask(void const * argument) {
+	for (;;)
+	{
+		osDelay(100);
+	}
+}
+
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

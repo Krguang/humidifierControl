@@ -65,6 +65,9 @@ extern ADC_HandleTypeDef hadc1;
 
 /* USER CODE BEGIN Private defines */
 
+volatile extern uint16_t ADC_ConvertedValue[];
+extern uint32_t ADC_Average[];
+
 /* USER CODE END Private defines */
 
 extern void _Error_Handler(char *, int);
