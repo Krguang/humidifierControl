@@ -66,7 +66,7 @@ extern UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN Private defines */
 
-#define BUFFER_SIZE 256
+#define BUFFER_SIZE 255
 
 extern uint8_t uart1_recv_end_flag;
 extern uint8_t uart2_recv_end_flag;

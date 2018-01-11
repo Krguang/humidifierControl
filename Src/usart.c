@@ -59,6 +59,12 @@ struct buffer Usart1ReceiveBuffer, Usart2ReceiveBuffer;
 uint8_t uart1_recv_end_flag;
 uint8_t uart2_recv_end_flag;
 
+int _write(int fd, char *pBuffer, int size)
+{
+	HAL_UART_Transmit(&huart1, pBuffer, size, 0xff);
+	return size;
+}
+
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -304,8 +310,8 @@ void USART1_IRQHandler(void)
 		HAL_UART_DMAStop(&huart1);
 		temp = hdma_usart1_rx.Instance->CNDTR;
 		Usart1ReceiveBuffer.BufferLen = BUFFER_SIZE - temp;
-		uart1_recv_end_flag = 1;
 		HAL_UART_Receive_DMA(&huart1, Usart1ReceiveBuffer.BufferArray, BUFFER_SIZE);
+		uart1_recv_end_flag = 1;
 	}
 }
 
@@ -319,8 +325,8 @@ void USART2_IRQHandler(void)
 		HAL_UART_DMAStop(&huart2);
 		temp = hdma_usart2_rx.Instance->CNDTR;
 		Usart2ReceiveBuffer.BufferLen = BUFFER_SIZE - temp;
+		HAL_UART_Receive_DMA(&huart2, Usart2ReceiveBuffer.BufferArray, Usart2ReceiveBuffer.BufferLen);
 		uart2_recv_end_flag = 1;
-		HAL_UART_Receive_DMA(&huart2, Usart2ReceiveBuffer.BufferArray, BUFFER_SIZE);
 	}
 }
 

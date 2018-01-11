@@ -55,6 +55,8 @@
 
 #include "usart.h"
 #include "modbusSlave.h"
+#include "modbusMaster.h"
+#include "dataProcessing.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -64,6 +66,7 @@ osThreadId initTaskHandle;
 
 osThreadId dataProcessingTaskHandle;
 osThreadId modbusSlaveTaskHandle;
+osThreadId modbusMasterTaskHandle;
 osThreadId checkKeyPressedHandle;
 
 /* USER CODE END Variables */
@@ -77,6 +80,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 void StartDataProCessingTask(void const * argument);
 void StartModbusSlaveTask(void const * argument);
+void StartModbusMasterTask(void const * argument);
 void StartCheckKeyPressedTask(void const * argument);
 
 /* USER CODE END FunctionPrototypes */
@@ -127,6 +131,9 @@ void StartInittTask(void const * argument)
 	osThreadDef(modbusSlaveTask, StartModbusSlaveTask, osPriorityNormal, 0, 128);
 	modbusSlaveTaskHandle = osThreadCreate(osThread(modbusSlaveTask), NULL);
 
+	osThreadDef(modbusMasterTask, StartModbusMasterTask, osPriorityNormal, 0, 128);
+	modbusMasterTaskHandle = osThreadCreate(osThread(modbusMasterTask), NULL);
+
 	osThreadDef(checkKeyPressedTask, StartCheckKeyPressedTask, osPriorityNormal, 0, 128);
 	checkKeyPressedHandle = osThreadCreate(osThread(checkKeyPressedTask), NULL);
 	
@@ -139,8 +146,8 @@ void StartInittTask(void const * argument)
 void StartDataProCessingTask(void const * argument) {
 	for (;;)
 	{
-
-		osDelay(100);
+		dataProcessing();
+		osDelay(10);
 	}
 }
 
@@ -149,13 +156,28 @@ void StartModbusSlaveTask(void const * argument) {
 	{
 		osDelay(10);
 		modbusSlave();
+		Usart2RxMonitor();
+	}
+}
+
+void StartModbusMasterTask(void const * argument) {
+	for (;;)
+	{
+		osDelay(100);
+		sendDataMaster03();
+		osDelay(100);
+		sendDataMaster16();
 	}
 }
 
 void StartCheckKeyPressedTask(void const * argument) {
 	for (;;)
 	{
-		osDelay(100);
+		osDelay(5000);
+	//	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+	//	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
+	//	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);
+
 	}
 }
 

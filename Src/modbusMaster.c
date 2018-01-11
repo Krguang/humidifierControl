@@ -1,5 +1,6 @@
 #include "modbusMaster.h"
 #include "usart.h"
+#include "dataProcessing.h"
 
 uint8_t M2ASlaveAdd = 1;
 
@@ -49,13 +50,13 @@ void sendDataMaster16() {
 	txBuf[0] = M2ASlaveAdd;
 	txBuf[1] = 0x10;
 	txBuf[2] = 0x00;         //数据的起始地址；
-	txBuf[3] = 0x03;
+	txBuf[3] = 0x05;
 	txBuf[4] = 0x00;         //数据的个数；
-	txBuf[5] = 0x0a;
-	txBuf[6] = 0x14;         //数据的字节数；
+	txBuf[5] = 0x02;
+	txBuf[6] = 0x04;         //数据的字节数；
 	for (i = 0; i<txBuf[5]; i++) {
-		txBuf[7 + 2 * i] = (uint8_t)(localData[i+ txBuf[3]] >> 8);
-		txBuf[8 + 2 * i] = (uint8_t)(localData[i+ txBuf[3]] & 0xff);
+		txBuf[7 + 2 * i] = (uint8_t)(ctrlToDisplayTemp[i+ txBuf[3]] >> 8);
+		txBuf[8 + 2 * i] = (uint8_t)(ctrlToDisplayTemp[i+ txBuf[3]] & 0xff);
 	}
 	temp = GetCRC16(txBuf, 2 * txBuf[5] + 7);
 	txBuf[7 + 2 * txBuf[5]] = (uint8_t)(temp & 0xff);
@@ -78,11 +79,11 @@ static void ModbusDecode(uint8_t *MDbuf, uint8_t len) {
 	if ((MDbuf[len - 1] != crch) || (MDbuf[len - 2] != crcl)) return;	//如CRC校验不符时直接退出
 	for (uint8_t i = 0; i < MDbuf[2]/2; i++)
 	{
-		localData[i] = (uint16_t)(MDbuf[3 + 2*i] << 8) + MDbuf[4 + 2*i];
+		ctrlToDisplayTemp[i] = (uint16_t)(MDbuf[3 + 2*i] << 8) + MDbuf[4 + 2*i];
 	}
 }
 
-void Usart1RxMonitor() {
+void Usart2RxMonitor() {
 	if (uart2_recv_end_flag)
 	{
 		ModbusDecode(Usart2ReceiveBuffer.BufferArray, Usart2ReceiveBuffer.BufferLen);

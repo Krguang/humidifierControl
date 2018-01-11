@@ -2,6 +2,7 @@
 #include "modbusMaster.h"
 #include "usart.h"
 #include "cmsis_os.h"
+#include "dataProcessing.h"
 
 uint8_t gasRxAdd = 1;
 
@@ -31,8 +32,8 @@ static void ModbusDecode(unsigned char *MDbuf, unsigned char len) {
 	unsigned char cnt;
 	unsigned int  crc;
 	unsigned char crch, crcl;
-	
-	if ((MDbuf[0] != gasRxAdd)&&(MDbuf[0]!=0)) return;			//地址相符时，再对本帧数据进行校验
+
+	if (MDbuf[0] != gasRxAdd) return;								//地址相符时，再对本帧数据进行校验
 	crc = GetCRC16(MDbuf, len - 2);								//计算CRC校验值
 	crch = crc >> 8;
 	crcl = crc & 0xFF;
@@ -46,7 +47,7 @@ static void ModbusDecode(unsigned char *MDbuf, unsigned char len) {
 			MDbuf[2] = cnt * 2;								//读取数据的字节数，为寄存器数*2
 			len = 3;										//帧前部已有地址、功能码、字节数共3个字节
 			while (cnt--) {
-				unsigned int LocalStatusArrayTemp = localData[i++];	//读取的是16位数组，转换为2个8位数据存入发送数组
+				unsigned int LocalStatusArrayTemp = ctrlToPLCTemp[i++];	//读取的是16位数组，转换为2个8位数据存入发送数组
 				MDbuf[len++] = LocalStatusArrayTemp >> 8;
 				MDbuf[len++] = LocalStatusArrayTemp & 0xff;
 			}
@@ -61,7 +62,7 @@ static void ModbusDecode(unsigned char *MDbuf, unsigned char len) {
 	case 0x06:											//写入单个寄存器
 		if ((MDbuf[2] == 0x00) && (MDbuf[3] <= 0x20)) {	//寄存器地址支持0x0000～0x0020
 			i = MDbuf[3];								//提取寄存器地址
-			localData[i] = MDbuf[5];				//保存寄存器数据
+			ctrlToPLCTemp[i] = MDbuf[5];				//保存寄存器数据
 			len -= 2;									//长度-2以重新计算CRC并返回原帧
 		}
 		else {					//寄存器地址不被支持时，返回错误码{
@@ -79,16 +80,12 @@ static void ModbusDecode(unsigned char *MDbuf, unsigned char len) {
 			unsigned int writeTemp = 0;						//写两次8位转16位的缓存
 			while (cnt--) {									//写cnt次
 				writeTemp = MDbuf[startNum];					//第一位数据写入缓存
-				gasRxTxTemp[i] = (writeTemp << 8) + MDbuf[startNum + 1];	//保存寄存器数据
+				ctrlToPLCTemp[i] = (writeTemp << 8) + MDbuf[startNum + 1];	//保存寄存器数据
 				i++;
 				startNum = startNum + 2;
 			}
 
 			len = 6;			//保留6帧重新计算CRC并返回原帧
-			for (uint8_t i = 3; i < 12; i++)
-			{
-				localData[i] = gasRxTxTemp[i];
-			}
 		}
 		else {					//寄存器地址不被支持时，返回错误码{
 			MDbuf[1] = 0x86;	//功能码最高位置1
@@ -106,10 +103,7 @@ static void ModbusDecode(unsigned char *MDbuf, unsigned char len) {
 	crc = GetCRC16(MDbuf, len);		//计算返回帧的CRC校验值
 	MDbuf[len++] = crc & 0xFF;		//CRC低字节
 	MDbuf[len++] = crc >> 8;		//CRC高字节
-	if (MDbuf[0]!=0)				//广播模式不需要发送返回帧
-	{
-		HAL_UART_Transmit(&huart1, MDbuf, len, 1000);	//发送返回帧
-	}
+	HAL_UART_Transmit(&huart1, MDbuf, len, 0xff);	//发送返回帧
 }
 
 void modbusSlave() {

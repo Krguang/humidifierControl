@@ -58,6 +58,8 @@
 
 /* USER CODE BEGIN Includes */
 
+#include "dataProcessing.h"
+
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -117,7 +119,7 @@ int main(void)
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
 
   HAL_ADCEx_Calibration_Start(&hadc1);
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_ConvertedValue, 4);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_ConvertedValue, 3);
 
   /* USER CODE END 2 */
 
