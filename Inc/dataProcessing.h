@@ -4,6 +4,7 @@
 
 extern uint16_t humiCurrent;
 extern uint16_t humiOpening;
+extern uint16_t powerProportion;
 extern uint16_t ctrlToDisplayTemp[];
 extern uint16_t ctrlToPLCTemp[];
 

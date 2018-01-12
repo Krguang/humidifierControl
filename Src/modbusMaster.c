@@ -52,8 +52,8 @@ void sendDataMaster16() {
 	txBuf[2] = 0x00;         //数据的起始地址；
 	txBuf[3] = 0x05;
 	txBuf[4] = 0x00;         //数据的个数；
-	txBuf[5] = 0x02;
-	txBuf[6] = 0x04;         //数据的字节数；
+	txBuf[5] = 0x03;
+	txBuf[6] = 0x06;         //数据的字节数；
 	for (i = 0; i<txBuf[5]; i++) {
 		txBuf[7 + 2 * i] = (uint8_t)(ctrlToDisplayTemp[i+ txBuf[3]] >> 8);
 		txBuf[8 + 2 * i] = (uint8_t)(ctrlToDisplayTemp[i+ txBuf[3]] & 0xff);
