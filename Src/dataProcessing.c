@@ -1,17 +1,5 @@
 #include "dataProcessing.h"
 
-#define contactorOpen		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_SET)
-#define contactorClose		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_RESET)
-
-#define drianValveOpen		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_7,GPIO_PIN_SET)
-#define drianValveClose		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_7,GPIO_PIN_RESET)
-
-#define inletValveOpen		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_SET)
-#define inletValveClose		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_RESET)
-
-#define signalRelayOpen		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET)
-#define signalRelayClose	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET)
-
 #define readS2Pin1			HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12)
 #define readS2Pin2			HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11)
 #define readS2Pin3			HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10)
@@ -26,10 +14,11 @@
 #define readS1Pin5			HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10)
 #define readS1Pin6			HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_2)
 
-uint8_t keyStatus[4];
+
 uint16_t humiCurrent;
 uint16_t humiOpening;
 uint16_t humiCurrentUpperLimit;
+uint64_t humiVoltage;
 uint16_t powerProportion;
 
 uint16_t drainWaterTime;
@@ -40,6 +29,16 @@ uint16_t ctrlToPLCTemp[255];
 
 volatile uint16_t ADC_ConvertedValue[3];
 uint32_t ADC_Average[3];
+
+struct 
+{
+	uint8_t switchMode;
+	uint8_t ProportionMode;
+	uint8_t communicationMode;
+
+}HumiMode;
+
+
 
 static void adcProcesdsing() {
 
@@ -64,8 +63,49 @@ static void adcProcesdsing() {
 	
 }
 
-static dialSwitch() {
-	/******************************  加湿电流  *****************************/
+
+static void dialSwitch() {
+
+	/***********************************  控制模式选择  **********************************/
+	if ((readS1Pin5 == 1) && (readS1Pin6 == 1))
+	{
+		HumiMode.ProportionMode = 1;
+		HumiMode.switchMode = 0;
+		HumiMode.communicationMode = 0;
+	}
+
+	if ((readS1Pin5 == 0) && (readS1Pin6 == 0))
+	{
+		HumiMode.ProportionMode = 0;
+		HumiMode.switchMode = 1;
+		HumiMode.communicationMode = 0;
+	}
+
+	if ((readS1Pin5 == 0) && (readS1Pin6 == 1))
+	{
+		HumiMode.ProportionMode = 0;
+		HumiMode.switchMode = 0;
+		HumiMode.communicationMode = 1;
+	}
+
+
+	/***********************************  加湿电压选择  *************************************/
+	if ((readS1Pin1 == 1) && (readS1Pin2 == 1))
+	{
+		humiVoltage = 380;
+	}
+
+	if ((readS1Pin1 == 0) && (readS1Pin2 == 0))
+	{
+		humiVoltage = 220;
+	}
+
+	if ((readS1Pin1 == 0) && (readS1Pin2 == 1))
+	{
+		humiVoltage = 440;
+	}
+
+	/***********************************  加湿电流选择  *************************************/
 	if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 0) && (readS2Pin5 == 0))
 	{
 		humiCurrentUpperLimit = 2 * 11;
@@ -137,80 +177,14 @@ static dialSwitch() {
 		drainWaterTime = 0;
 	}
 	
-
 }
 
-static void relayCtrl() {
-
-}
-
-static void keyProcessing() {
-
-	static uint8_t keyTemp[] = { 0,0,0,0 };
-
-	if (ctrlToDisplayTemp[0] & (0x0001 << 0))
-	{
-		keyStatus[0] = 1;
-	}
-	else {
-		keyStatus[0] = 0;
-	}
-
-	if (ctrlToDisplayTemp[0] & (0x0001 << 1))
-	{
-		keyStatus[1] = 1;
-	}
-	else {
-		keyStatus[1] = 0;
-	}
-
-	if (ctrlToDisplayTemp[0] & (0x0001 << 2))
-	{
-		keyStatus[2] = 1;
-	}
-	else {
-		keyStatus[2] = 0;
-	}
-
-	if (ctrlToDisplayTemp[0] & (0x0001 << 3))
-	{
-		keyStatus[3] = 1;
-	}
-	else {
-		keyStatus[3] = 0;
-	}
-
-	if (keyStatus[0]!=keyTemp[0])
-	{
-		keyStatus[0] = keyTemp[0];
-		//do something
-	}
-
-	if (keyStatus[1] != keyTemp[1])
-	{
-		keyStatus[1] = keyTemp[1];
-		//do something
-	}
-
-	if (keyStatus[2] != keyTemp[2])
-	{
-		keyStatus[2] = keyTemp[2];
-		//do something
-	}
-
-	if (keyStatus[3] != keyTemp[3])
-	{
-		keyStatus[3] = keyTemp[3];
-		//do something
-	}
-}
 
 void dataProcessing() {
 
-	keyProcessing();
 	adcProcesdsing();
 	dialSwitch();
-	relayCtrl();
+
 	ctrlToDisplayTemp[5] = humiCurrent;
 	ctrlToDisplayTemp[6] = humiOpening;
 	ctrlToDisplayTemp[7] = powerProportion;

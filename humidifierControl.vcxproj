@@ -83,6 +83,7 @@
     <ClCompile Include="Src\dma.c" />
     <ClCompile Include="Src\freertos.c" />
     <ClCompile Include="Src\gpio.c" />
+    <ClCompile Include="Src\humiCtrl.c" />
     <ClCompile Include="Src\main.c" />
     <ClCompile Include="Src\modbusMaster.c" />
     <ClCompile Include="Src\modbusSlave.c" />
@@ -157,6 +158,7 @@
     <ClInclude Include="Inc\dma.h" />
     <ClInclude Include="Inc\FreeRTOSConfig.h" />
     <ClInclude Include="Inc\gpio.h" />
+    <ClInclude Include="Inc\humiCtrl.h" />
     <ClInclude Include="Inc\main.h" />
     <ClInclude Include="Inc\modbusMaster.h" />
     <ClInclude Include="Inc\modbusSlave.h" />
