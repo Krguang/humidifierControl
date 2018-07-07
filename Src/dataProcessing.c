@@ -17,12 +17,12 @@
 
 uint16_t humiCurrent;
 uint16_t humiOpening;
+uint16_t humiOpeningFromPLC;
 uint16_t humiCurrentUpperLimit;
 uint64_t humiVoltage;
 uint16_t powerProportion;
 
 uint16_t drainWaterTime;
-
 
 uint16_t ctrlToDisplayTemp[255];
 uint16_t ctrlToPLCTemp[255];
@@ -30,15 +30,7 @@ uint16_t ctrlToPLCTemp[255];
 volatile uint16_t ADC_ConvertedValue[3];
 uint32_t ADC_Average[3];
 
-struct 
-{
-	uint8_t switchMode;
-	uint8_t ProportionMode;
-	uint8_t communicationMode;
-
-}HumiMode;
-
-
+uint8_t humiMode;
 
 static void adcProcesdsing() {
 
@@ -60,32 +52,26 @@ static void adcProcesdsing() {
 	{
 		ADC_Average[i] = 0;
 	}
-	
+	//printf("humiCurrent = %d\n", humiCurrent);
 }
 
 
-static void dialSwitch() {
+void dialSwitchInit() {
 
 	/***********************************  控制模式选择  **********************************/
 	if ((readS1Pin5 == 1) && (readS1Pin6 == 1))
 	{
-		HumiMode.ProportionMode = 1;
-		HumiMode.switchMode = 0;
-		HumiMode.communicationMode = 0;
+		humiMode = PROPORTIONMODE;
 	}
 
 	if ((readS1Pin5 == 0) && (readS1Pin6 == 0))
 	{
-		HumiMode.ProportionMode = 0;
-		HumiMode.switchMode = 1;
-		HumiMode.communicationMode = 0;
+		humiMode = SWITCHMODE;
 	}
 
 	if ((readS1Pin5 == 0) && (readS1Pin6 == 1))
 	{
-		HumiMode.ProportionMode = 0;
-		HumiMode.switchMode = 0;
-		HumiMode.communicationMode = 1;
+		humiMode = COMMUNICATION;
 	}
 
 
@@ -183,12 +169,13 @@ static void dialSwitch() {
 void dataProcessing() {
 
 	adcProcesdsing();
-	dialSwitch();
 
 	ctrlToDisplayTemp[5] = humiCurrent;
 	ctrlToDisplayTemp[6] = humiOpening;
 	ctrlToDisplayTemp[7] = powerProportion;
 
 	ctrlToPLCTemp[0] = humiCurrent;
-	humiOpening = ctrlToPLCTemp[5];
+	humiOpeningFromPLC = ctrlToPLCTemp[5];
+
+
 }

@@ -57,6 +57,7 @@
 #include "modbusSlave.h"
 #include "modbusMaster.h"
 #include "dataProcessing.h"
+#include "humiCtrl.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -125,6 +126,10 @@ void StartInittTask(void const * argument)
 {
 
   /* USER CODE BEGIN StartInittTask */
+
+	dialSwitchInit();
+	humiCtrlInit();
+
 	osThreadDef(dataProCessingTask, StartDataProCessingTask, osPriorityNormal, 0, 128);
 	dataProcessingTaskHandle = osThreadCreate(osThread(dataProCessingTask), NULL);
 
@@ -147,6 +152,7 @@ void StartDataProCessingTask(void const * argument) {
 	for (;;)
 	{
 		dataProcessing();
+		
 		osDelay(10);
 	}
 }
@@ -173,11 +179,8 @@ void StartModbusMasterTask(void const * argument) {
 void StartCheckKeyPressedTask(void const * argument) {
 	for (;;)
 	{
-		osDelay(5000);
-	//	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
-	//	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
-	//	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_7);
-
+		humiCtrl();
+		osDelay(10);
 	}
 }
 
