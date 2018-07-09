@@ -93,6 +93,7 @@
     <ClCompile Include="Src\system_stm32f1xx.c" />
     <ClCompile Include="Src\tim.c" />
     <ClCompile Include="Src\usart.c" />
+    <None Include="README.md" />
     <None Include="stm32.mak" />
     <ClCompile Include="$(BSP_ROOT)\STM32F1xxxx\StartupFiles\startup_stm32f103xb.c" />
     <ClCompile Include="$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal.c" />
