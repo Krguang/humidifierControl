@@ -26,9 +26,9 @@
   </PropertyGroup>
   <PropertyGroup Label="VisualGDBPackageDefinitions">
     <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
-    <ToolchainVersion>6.2.0/7.12/r4</ToolchainVersion>
+    <ToolchainVersion>7.2.0/8.0.1/r3</ToolchainVersion>
     <BSP_ID>com.sysprogs.arm.stm32</BSP_ID>
-    <BSP_VERSION>4.6R4</BSP_VERSION>
+    <BSP_VERSION>4.7</BSP_VERSION>
   </PropertyGroup>
   <ImportGroup Label="VisualGDBFindComponents">
     <Import Project="$(LOCALAPPDATA)\VisualGDB\FindComponents.props" />
@@ -46,7 +46,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeIncludeSearchPath>.;$(BSP_ROOT)\FreeRTOS\Source\CMSIS_RTOS;$(BSP_ROOT)\FreeRTOS\Source\include;$(BSP_ROOT)\FreeRTOS\Source\Portable\gcc\ARM_CM3;$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Inc;$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Inc\Legacy;$(BSP_ROOT)\STM32F1xxxx\CMSIS_HAL\Device\ST\STM32F1xx\Include;$(BSP_ROOT)\STM32F1xxxx\CMSIS_HAL\Include;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0\arm-eabi\thumb\cortex_m3;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\6.2.0\backward;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\6.2.0\include;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\6.2.0\include-fixed;$(TOOLCHAIN_ROOT)\arm-eabi\sys-include;$(TOOLCHAIN_ROOT)\arm-eabi\include;Inc;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>.;$(BSP_ROOT)\FreeRTOS\Source\CMSIS_RTOS;$(BSP_ROOT)\FreeRTOS\Source\Include;$(BSP_ROOT)\FreeRTOS\Source\Portable\gcc\ARM_CM3;$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Inc;$(BSP_ROOT)\STM32F1xxxx\STM32F1xx_HAL_Driver\Inc\Legacy;$(BSP_ROOT)\STM32F1xxxx\CMSIS_HAL\Device\ST\STM32F1xx\Include;$(BSP_ROOT)\STM32F1xxxx\CMSIS_HAL\Include;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\arm-eabi\thumb\cortex_m3;$(TOOLCHAIN_ROOT)\arm-eabi\include\c++\7.2.0\backward;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include;$(TOOLCHAIN_ROOT)\lib\gcc\arm-eabi\7.2.0\include-fixed;$(TOOLCHAIN_ROOT)\arm-eabi\sys-include;$(TOOLCHAIN_ROOT)\arm-eabi\include;Inc;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
     <NMakeForcedIncludes>$(ProjectDir)\gcc_Debug.h;$(VISUALGDB_DIR)\gcc_compat.h;$(BSP_ROOT)\stm32_compat.h;$(NMakeForcedIncludes)</NMakeForcedIncludes>
     <NMakeBuildCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /build "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>"$(VISUALGDB_DIR)\VisualGDB.exe" /clean "$(ProjectPath)" "/solution:$(SolutionPath)"  "/config:$(Configuration)" "/platform:$(Platform)"</NMakeCleanCommandLine>

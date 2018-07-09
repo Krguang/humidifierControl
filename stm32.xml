@@ -2,12 +2,12 @@
 <EmbeddedProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ToolchainID>com.visualgdb.arm-eabi</ToolchainID>
   <ToolchainVersion>
-    <GCC>6.2.0</GCC>
-    <GDB>7.12</GDB>
-    <Revision>4</Revision>
+    <GCC>7.2.0</GCC>
+    <GDB>8.0.1</GDB>
+    <Revision>3</Revision>
   </ToolchainVersion>
   <BspID>com.sysprogs.arm.stm32</BspID>
-  <BspVersion>4.6R4</BspVersion>
+  <BspVersion>4.7</BspVersion>
   <McuID>STM32F103C8</McuID>
   <MCUDefinitionFile>STM32F1xxxx/DeviceDefinitions/stm32f103xb.xml</MCUDefinitionFile>
   <MCUProperties>
