@@ -15,7 +15,7 @@
 #define signalRelayClose	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET)
 
 #define waterLevelWarnning	HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4)
-#define sitchSignal			HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_15)
+#define switchSignal		HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_15)
 
 uint8_t keyStatus[4];
 uint16_t drainWaterShortTime;
@@ -37,9 +37,11 @@ void osDelaySecond(int s) {
 
 void humiCtrlInit() {
 
+	printf("start humiCtrlInit\n");
+
 	drainWaterShortTime = humiCurrentUpperLimit / 11;
 	drainWaterLongTime = humiCurrentUpperLimit;
-
+	
 	contactorClose;
 	drianValveClose;
 	inletValveOpen;
@@ -96,10 +98,10 @@ void humiCtrl() {
 		finalCurrentLimit = humiCurrentUpperLimit*humiOpeningFromPLC / 1000;
 	}
 	
-	printf("humiCurrentUpperLimit = %d\n", humiCurrentUpperLimit);
-	printf("finalCurrentLimit = %d\n", finalCurrentLimit);
-
-	if (sitchSignal == 1)
+	//printf("humiCurrentUpperLimit = %d\n", humiCurrentUpperLimit);
+	//printf("finalCurrentLimit = %d\n", finalCurrentLimit);
+	printf("switchSignal = %d \n", switchSignal);
+	if (switchSignal == 1)
 	{
 		if (waterLevelWarnning == 1)		//Ë®Î»±¨¾¯
 		{

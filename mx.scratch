@@ -1,15 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project>
 <ProjectName>C:\Users\K\Desktop\Stm32VS\humidifierControl\\humidifierControl</ProjectName>
-<CMSIS>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\CMSIS</CMSIS>
-<HAL_Driver>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\CMSIS</HAL_Driver>
-
+<ProjectNature>C</ProjectNature> 
+<CMSIS>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers\CMSIS</CMSIS>
+<HAL_Driver>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers\CMSIS</HAL_Driver>
 <Toolchain>TrueSTUDIO</Toolchain>
 <Version>0</Version>
 
 <filestoremove>
-	<file>
-	</file>
+    <file>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_gpio_ex.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_adc.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_adc_ex.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_tim.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_tim_ex.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_uart.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_rcc.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_rcc_ex.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_gpio.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_dma.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_cortex.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_pwr.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_flash.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_flash_ex.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_4.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM3\port.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\croutine.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\event_groups.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\list.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\queue.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\tasks.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\timers.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.c</name>
+    <name>..\Src\system_stm32f1xx.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\CMSIS\Device\ST\STM32F1xx\Source\Templates\system_stm32f1xx.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang\heap_4.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM3\port.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\croutine.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\event_groups.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\list.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\queue.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\tasks.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\timers.c</name>
+    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS\cmsis_os.c</name>
+    </file>
 </filestoremove>
 
 <inctoremove>
@@ -17,6 +52,13 @@
 	   <include></include>
     </Aincludes>
 	<Cincludes>
+	   		<include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Inc</include>
+	   		<include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Inc\Legacy</include>
+	   		<include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM3</include>
+	   		<include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\CMSIS\Device\ST\STM32F1xx\Include</include>
+	   		<include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\include</include>
+	   		<include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS</include>
+	   		<include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\CMSIS\Include</include>
     </Cincludes>
 </inctoremove>
 
@@ -30,8 +72,8 @@
     	<board>custom</board>
 			
     <usedDebug>true</usedDebug>
-    	<debugprobe></debugprobe>
-    <optimization></optimization>
+    	<debugprobe>swd</debugprobe>
+    <optimization>2</optimization>
     <icfloc>0</icfloc>
     <Adefines>
         <define></define>
@@ -59,13 +101,13 @@
     
 	<Cincludes>
 	   <include>..\Inc</include>
-	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Inc</include>
-	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\STM32F1xx_HAL_Driver\Inc\Legacy</include>
-	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM3</include>
-	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\CMSIS\Device\ST\STM32F1xx\Include</include>
-	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\include</include>
-	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS</include>
-	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers\CMSIS\Include</include>
+	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers\STM32F1xx_HAL_Driver\Inc</include>
+	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers\STM32F1xx_HAL_Driver\Inc\Legacy</include>
+	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM3</include>
+	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers\CMSIS\Device\ST\STM32F1xx\Include</include>
+	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares\Third_Party\FreeRTOS\Source\include</include>
+	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS</include>
+	   <include>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers\CMSIS\Include</include>
 
     </Cincludes>
       </config>
@@ -73,103 +115,103 @@
 
     <underRoot>true</underRoot>
     	<copyAsReference>true</copyAsReference>
-            <sourceEntries>
+            <sourceEntries>               
                 <sourceEntry>
                         <name>Inc</name>
                 </sourceEntry>
                 <sourceEntry>
                         <name>Src</name>
                 </sourceEntry>
-                <sourceEntry>
-                        <name>Drivers</name>
-                </sourceEntry>
-                        <sourceEntry>
-                                <name>Middlewares</name>
-                        </sourceEntry>
+		    	<sourceEntry>
+		    		<name>Drivers</name>
+		    	</sourceEntry>
+		    		<sourceEntry>
+		    			<name>Middlewares</name>
+		    		</sourceEntry>
             </sourceEntries>
-                <group>
-	  	<name>Middlewares</name>
-		 	<group>
-		 		<name>FreeRTOS</name>
+      <group>
+        <name>Middlewares</name>  
+                    <group>
+                            <name>FreeRTOS</name>
+                                            <file>
+                                                    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c</name>
+                                            </file>
+                                            <file>
+                                                    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c</name>
+                                            </file>
+                                            <file>
+                                                    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares/Third_Party/FreeRTOS/Source/croutine.c</name>
+                                            </file>
+                                            <file>
+                                                    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares/Third_Party/FreeRTOS/Source/event_groups.c</name>
+                                            </file>
+                                            <file>
+                                                    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares/Third_Party/FreeRTOS/Source/list.c</name>
+                                            </file>
+                                            <file>
+                                                    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares/Third_Party/FreeRTOS/Source/queue.c</name>
+                                            </file>
+                                            <file>
+                                                    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares/Third_Party/FreeRTOS/Source/tasks.c</name>
+                                            </file>
+                                            <file>
+                                                    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares/Third_Party/FreeRTOS/Source/timers.c</name>
+                                            </file>
+                                            <file>
+                                                    <name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c</name>
+                                            </file>
+                </group>
+      </group> 
+	   <group>
+	    <name>Drivers</name> 
+		   <group>
+		 		<name>STM32F1xx_HAL_Driver</name>
 						<file>
-							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c</name>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c</name>
 						</file>
 						<file>
-							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c</name>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c</name>
 						</file>
 						<file>
-							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares/Third_Party/FreeRTOS/Source/croutine.c</name>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c</name>
 						</file>
 						<file>
-							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares/Third_Party/FreeRTOS/Source/event_groups.c</name>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</name>
 						</file>
 						<file>
-							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares/Third_Party/FreeRTOS/Source/list.c</name>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c</name>
 						</file>
 						<file>
-							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares/Third_Party/FreeRTOS/Source/queue.c</name>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c</name>
 						</file>
 						<file>
-							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares/Third_Party/FreeRTOS/Source/tasks.c</name>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c</name>
 						</file>
 						<file>
-							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares/Third_Party/FreeRTOS/Source/timers.c</name>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c</name>
 						</file>
 						<file>
-							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c</name>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c</name>
 						</file>
-                        </group>
-                </group> 
-    		<group>
-	    		<name>Drivers</name> 
-		 		<group>
-		 			<name>STM32F1xx_HAL_Driver</name>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c</name>
-							</file>
-							<file>
-								<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.0\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c</name>
-							</file>
-		    	</group>
-	  		</group>
-
+						<file>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c</name>
+						</file>
+						<file>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c</name>
+						</file>
+						<file>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c</name>
+						</file>
+						<file>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c</name>
+						</file>
+						<file>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c</name>
+						</file>
+						<file>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c</name>
+						</file>
+		    </group>		    
+	  </group>   
+	
 </Project>

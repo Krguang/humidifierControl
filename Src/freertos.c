@@ -153,7 +153,7 @@ void StartDataProCessingTask(void const * argument) {
 	{
 		dataProcessing();
 		
-		osDelay(10);
+		osDelay(100);
 	}
 }
 
@@ -180,7 +180,8 @@ void StartCheckKeyPressedTask(void const * argument) {
 	for (;;)
 	{
 		humiCtrl();
-		osDelay(10);
+		osDelay(100);
+		printf("humiCtrl running \n");
 	}
 }
 
