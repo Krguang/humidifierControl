@@ -83,7 +83,7 @@ static uint16_t getIFromP(uint16_t p) {
 
 void dialSwitchInit() {
 
-	printf("start dialSwitchInit\n");
+	//printf("start dialSwitchInit\n");
 
 	/***********************************  控制模式选择  **********************************/
 	if ((readS1Pin5 == 1) && (readS1Pin6 == 1))
@@ -172,7 +172,7 @@ void dialSwitchInit() {
 		humiCurrentUpperLimit = getIFromP(49400);
 	}
 	
-	printf("humiCurrentUpperLimit = %d \n", humiCurrentUpperLimit);
+	//printf("humiCurrentUpperLimit = %d \n", humiCurrentUpperLimit);
 
 /******************************************  额外排水时间  ****************************************/
 	if ((readS1Pin1 == 1) && (readS1Pin2 == 1))

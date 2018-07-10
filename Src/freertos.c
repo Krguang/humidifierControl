@@ -129,16 +129,19 @@ void StartInittTask(void const * argument)
 
 	dialSwitchInit();
 	humiCtrlInit();
-
+	
 	osThreadDef(dataProCessingTask, StartDataProCessingTask, osPriorityNormal, 0, 128);
 	dataProcessingTaskHandle = osThreadCreate(osThread(dataProCessingTask), NULL);
 
+	
 	osThreadDef(modbusSlaveTask, StartModbusSlaveTask, osPriorityNormal, 0, 128);
 	modbusSlaveTaskHandle = osThreadCreate(osThread(modbusSlaveTask), NULL);
 
+	
 	osThreadDef(modbusMasterTask, StartModbusMasterTask, osPriorityNormal, 0, 128);
 	modbusMasterTaskHandle = osThreadCreate(osThread(modbusMasterTask), NULL);
 
+	
 	osThreadDef(checkKeyPressedTask, StartCheckKeyPressedTask, osPriorityNormal, 0, 128);
 	checkKeyPressedHandle = osThreadCreate(osThread(checkKeyPressedTask), NULL);
 	
@@ -152,7 +155,6 @@ void StartDataProCessingTask(void const * argument) {
 	for (;;)
 	{
 		dataProcessing();
-		
 		osDelay(100);
 	}
 }
@@ -181,7 +183,6 @@ void StartCheckKeyPressedTask(void const * argument) {
 	{
 		humiCtrl();
 		osDelay(100);
-		printf("humiCtrl running \n");
 	}
 }
 

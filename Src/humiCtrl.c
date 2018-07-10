@@ -2,14 +2,14 @@
 #include "dataProcessing.h"
 #include "cmsis_os.h"
 
-#define contactorOpen		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_SET)		//接触器开关
-#define contactorClose		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_RESET)
+#define contactorOpen		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_SET)		//接触器开关
+#define contactorClose		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_RESET)
 
 #define drianValveOpen		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_7,GPIO_PIN_SET)		//排水
 #define drianValveClose		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_7,GPIO_PIN_RESET)
 
-#define inletValveOpen		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_SET)		//进水
-#define inletValveClose		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_RESET)
+#define inletValveOpen		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_SET)		//进水
+#define inletValveClose		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_RESET)
 
 #define signalRelayOpen		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET)		//输出信号继电器
 #define signalRelayClose	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET)
@@ -37,7 +37,7 @@ void osDelaySecond(int s) {
 
 void humiCtrlInit() {
 
-	printf("start humiCtrlInit\n");
+//	printf("start humiCtrlInit\n");
 
 	drainWaterShortTime = humiCurrentUpperLimit / 11;
 	drainWaterLongTime = humiCurrentUpperLimit;
@@ -100,7 +100,7 @@ void humiCtrl() {
 	
 	//printf("humiCurrentUpperLimit = %d\n", humiCurrentUpperLimit);
 	//printf("finalCurrentLimit = %d\n", finalCurrentLimit);
-	printf("switchSignal = %d \n", switchSignal);
+	//printf("switchSignal = %d \n", switchSignal);
 	if (switchSignal == 1)
 	{
 		if (waterLevelWarnning == 1)		//水位报警
