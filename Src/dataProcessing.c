@@ -14,7 +14,7 @@
 #define readS1Pin5			HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10)
 #define readS1Pin6			HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_2)
 
-
+uint16_t alarmCode;
 uint16_t humiCurrent;
 uint16_t humiOpening;
 uint16_t humiOpeningFromPLC;
@@ -49,25 +49,14 @@ static void adcProcesdsing() {
 	}
 
 	humiOpening = ADC_Average[0] *10/ 4096;
-	//humiCurrent = ADC_Average[1] * 8 / 4095;//0-80A对应0-3.3V
-	//humiCurrent = ADC_Average[1] * 6 / 5316;//5316=(3.06*1.4/3.3)*4095
+
 	humiCurrent = ADC_Average[1] *6/4096 - 1;//选用39R电阻。0-60A-->0-60ma-->0-0.06*39*1.414V-->0-3.3V-->0-4095
 										//0-600 对应 0-4095.
 	powerProportion = ADC_Average[2] * (1001 - 250) / 4096 / 100 + 250;
 
-	if (humiOpening < 0)
-	{
-		humiOpening = 0;
-	}
-
-	if (humiCurrent < 0)
+	if (humiCurrent >= 32767)
 	{
 		humiCurrent = 0;
-	}
-
-	if (powerProportion < 0)
-	{
-		powerProportion = 0;
 	}
 
 	for (uint8_t i = 0; i < 3; i++)

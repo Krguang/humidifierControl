@@ -23,6 +23,7 @@ uint8_t keyStatus[4];
 uint8_t startLowerLimitCountFlag;
 uint16_t lowerLimitCount;
 
+uint8_t blinkFlag;
 uint8_t alarmFlag;					//报警标志
 uint8_t allowRunFlagDrainWater;		//允许运行信号，排水相关
 
@@ -34,92 +35,13 @@ uint16_t stopInletCurrent;			//停止进水电流
 
 
 static void keyProcessing();
-
-
-void osDelaySecond(int s) {
-	for (int i = 0; i < s; i++)
-	{
-		osDelay(1000);
-	}
-}
-
-//加湿数据初始化
-  void humiCtrlInit() {
-
-	  startLowerLimitCountFlag = 0;
-	  lowerLimitCount = 0;
-	  alarmFlag = 0;
-	  allowRunFlagDrainWater = 1;
-	  signalRelayClose;
-
-	  shutOffCurrentTopLimit = humiCurrentUpperLimit*1.414;
-	  
-	//  printf("shutOffCurrentTopLimit = %d \n", shutOffCurrentTopLimit);
-	  //printf("humiOpening = %d \n", humiOpening);
-	  //printf("powerProportion = %d \n", powerProportion);
-	  //printf("shutOffCurrentLowerLimit = %d \n", shutOffCurrentLowerLimit);
-}
-
-
-//排水 S 秒
-static void drainWater(int s) {
-	contactorClose;
-	inletValveClose;
-	drianValveOpen;
-	osDelaySecond(s);
-	drianValveClose;
-	contactorOpen;
-}
-
-//洗桶
-static void cleanBucket() {
-
-	while (0 == waterLevelWarnning) {
-
-		drianValveClose;
-		inletValveOpen;
-		contactorOpen;
-	}
-	drainWater(cleanDrainWaterTime);
-}
-
-
-/**
-* @brief 指示灯开关
-* @param color：0：绿色。1：红色
-* @param statu: 0:关闭。 1：打开
-*/
-static void ledSwitch(uint8_t color,uint8_t statu) {
-	//关闭绿灯时，要关闭pwm输出。
-
-}
-
-/**
-* @brief 指示灯闪烁
-* @param color：0：绿色。1：红色
-*/
-static void ledBlink(uint8_t color) {
-	//关闭绿灯时，要关闭pwm输出。
-
-}
-
-
-//绿灯暗，专用于待机
-static void greenLedDark() {
-
-
-}
-
-
-//待机
-static void humiSuspend() {
-
-	contactorClose;
-	inletValveClose;
-	drianValveClose;
-	greenLedDark();
-	ledSwitch(1, 0);
-}
+static void osDelaySecond(int s);
+static void drainWater(int s);
+static void cleanBucket();
+static void ledSwitch(uint8_t color, uint8_t statu);
+static void ledBlink(uint8_t color);
+static void greenLedDark();
+static void humiSuspend();
 
 
 void humiCtrl() {
@@ -128,9 +50,6 @@ void humiCtrl() {
 	startInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.9;
 	stopInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.1;
 	startDrainCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.2;
-
-
-	printf("humiCurrent = %d \n", humiCurrent);
 
 	//运行需满足三个条件：1.开关信号闭合。2.非排水状态。3.非报警
 	if ((1 == allowRunFlagDrainWater)&&(0 == alarmFlag))
@@ -157,6 +76,27 @@ void humiCtrl() {
 					drainWater(autoDrainWaterTime);
 				}
 			}
+			else if (humiCurrent <= startInletCurrent)
+			{
+
+				drianValveClose;
+				inletValveOpen;
+				contactorOpen;
+				if (humiCurrent <= shutOffCurrentLowerLimit)
+				{
+					startLowerLimitCountFlag = 1;
+					if (lowerLimitCount > 30)	//测试为30秒，实际为30*60秒
+					{
+						startLowerLimitCountFlag = 0;
+						lowerLimitCount = 0;
+						alarmFlag = 1;
+						humiSuspend();
+						signalRelayOpen;
+					}
+				}
+				ledBlink(1);
+				ledSwitch(0, 0);
+			}
 			else if ((humiCurrent <= startInletCurrent)&&(humiCurrent >= shutOffCurrentLowerLimit))//电流在正常工作范围内
 			{
 				drianValveClose;
@@ -164,26 +104,6 @@ void humiCtrl() {
 				contactorOpen;
 				ledSwitch(1, 0);
 				ledSwitch(0, 1);
-			}
-			else if (humiCurrent <= shutOffCurrentLowerLimit)	//小于关断电流，开始计时，30分钟后关机报警。
-			{
-				startLowerLimitCountFlag = 1;
-				if (lowerLimitCount > 30)	//测试为30秒，实际为30分钟
-				{
-					startLowerLimitCountFlag = 0;
-					lowerLimitCount = 0;
-					alarmFlag = 1;
-					humiSuspend();
-					signalRelayOpen;
-				}
-				else
-				{
-					drianValveClose;
-					inletValveClose;
-					contactorOpen;
-				}
-				ledBlink(1);
-				ledSwitch(0, 0);
 			}
 		}
 		else
@@ -255,3 +175,124 @@ static void keyProcessing() {
 	}
 }
 
+static void osDelaySecond(int s) {
+	for (int i = 0; i < s; i++)
+	{
+		osDelay(1000);
+	}
+}
+
+//加湿数据初始化
+void humiCtrlInit() {
+
+	startLowerLimitCountFlag = 0;
+	lowerLimitCount = 0;
+	alarmFlag = 0;
+	allowRunFlagDrainWater = 1;
+	signalRelayClose;
+
+	shutOffCurrentTopLimit = humiCurrentUpperLimit*1.414;
+}
+
+
+//排水 S 秒
+static void drainWater(int s) {
+	contactorClose;
+	inletValveClose;
+	drianValveOpen;
+	osDelaySecond(s);
+	drianValveClose;
+	contactorOpen;
+}
+
+//洗桶
+static void cleanBucket() {
+
+	while (0 == waterLevelWarnning) {
+
+		drianValveClose;
+		inletValveOpen;
+		contactorOpen;
+	}
+	drainWater(cleanDrainWaterTime);
+}
+
+
+/**
+* @brief 指示灯开关
+* @param color：0：绿色。1：红色
+* @param statu: 0:关闭。 1：打开
+*/
+static void ledSwitch(uint8_t color, uint8_t statu) {
+	//关闭绿灯时，要关闭pwm输出。
+	if (0 == color)
+	{
+		if (1 == statu)
+		{
+			HAL_GPIO_WritePin(green_led_GPIO_Port, green_led_Pin, GPIO_PIN_SET);
+		}
+		else
+		{
+			HAL_GPIO_WritePin(green_led_GPIO_Port, green_led_Pin, GPIO_PIN_RESET);
+		}
+	}
+	else if (1 == color)
+	{
+		if (1 == statu)
+		{
+			HAL_GPIO_WritePin(red_led_GPIO_Port, red_led_Pin, GPIO_PIN_SET);
+		}
+		else
+		{
+			HAL_GPIO_WritePin(red_led_GPIO_Port, red_led_Pin, GPIO_PIN_RESET);
+		}
+	}
+}
+
+/**
+* @brief 指示灯闪烁
+* @param color：0：绿色。1：红色
+*/
+static void ledBlink(uint8_t color) {
+	//关闭绿灯时，要关闭pwm输出。
+	if (0 == color)
+	{
+		if (1 == blinkFlag)
+		{
+			HAL_GPIO_WritePin(green_led_GPIO_Port, green_led_Pin, GPIO_PIN_SET);
+		}
+		else
+		{
+			HAL_GPIO_WritePin(green_led_GPIO_Port, green_led_Pin, GPIO_PIN_RESET);
+		}
+	}
+	else if (1 == color)
+	{
+		if (1 == blinkFlag)
+		{
+			HAL_GPIO_WritePin(red_led_GPIO_Port, red_led_Pin, GPIO_PIN_SET);
+		}
+		else
+		{
+			HAL_GPIO_WritePin(red_led_GPIO_Port, red_led_Pin, GPIO_PIN_RESET);
+		}
+	}
+}
+
+
+//绿灯暗，专用于待机
+static void greenLedDark() {
+
+
+}
+
+
+//待机
+static void humiSuspend() {
+
+	contactorClose;
+	inletValveClose;
+	drianValveClose;
+	greenLedDark();
+	ledSwitch(1, 0);
+}

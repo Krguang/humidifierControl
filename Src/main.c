@@ -126,6 +126,7 @@ int main(void)
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_ConvertedValue, 3);
   HAL_TIM_Base_Start_IT(&htim3);
 
+
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -230,6 +231,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 1 */
   if (htim->Instance == TIM3)//tim3 1s÷–∂œ
   {
+	  blinkFlag ^= 1;
+
 	  if (1 == startLowerLimitCountFlag)
 	  {
 		  lowerLimitCount++;
