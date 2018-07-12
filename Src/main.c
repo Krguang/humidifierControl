@@ -59,6 +59,7 @@
 /* USER CODE BEGIN Includes */
 
 #include "dataProcessing.h"
+#include "humiCtrl.h"
 
 /* USER CODE END Includes */
 
@@ -123,6 +124,7 @@ int main(void)
 
   HAL_ADCEx_Calibration_Start(&hadc1);
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_ConvertedValue, 3);
+  HAL_TIM_Base_Start_IT(&htim3);
 
   /* USER CODE END 2 */
 
@@ -226,7 +228,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-
+  if (htim->Instance == TIM3)//tim3 1s÷–∂œ
+  {
+	  if (1 == startLowerLimitCountFlag)
+	  {
+		  lowerLimitCount++;
+	  }
+  }
   /* USER CODE END Callback 1 */
 }
 
