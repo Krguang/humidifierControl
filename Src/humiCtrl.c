@@ -45,12 +45,24 @@ static void humiSuspend();
 
 void humiCtrl() {
 
-	shutOffCurrentLowerLimit = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.3;
-	startInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.9;
-	stopInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.1;
-	startDrainCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.2;
 
-	//运行需满足三个条件：1.开关信号闭合。2.非排水状态。3.非报警
+	if (humiMode == PROPORTIONMODE)
+	{
+		shutOffCurrentLowerLimit = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.3;
+		startInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.9;
+		stopInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.1;
+		startDrainCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.2;
+	}
+	else if (humiMode == SWITCHMODE)
+	{
+		shutOffCurrentLowerLimit = humiCurrentUpperLimit * powerProportion / 1000 * 0.3;
+		startInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 0.9;
+		stopInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.1;
+		startDrainCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.2;
+	}
+	
+
+	//运行需满足四个条件：1.开关信号闭合。2.非排水状态。3.非报警。
 	if ((1 == allowRunFlagDrainWater)&&(0 == alarmFlag))
 	{
 

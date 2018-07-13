@@ -14,6 +14,7 @@
 #define readS1Pin5			HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10)
 #define readS1Pin6			HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_2)
 
+uint8_t humiMode;
 uint16_t alarmCode;
 uint16_t humiCurrent;
 uint16_t humiOpening;
@@ -94,22 +95,18 @@ void dialSwitchInit() {
 
 	/***********************************  控制模式选择  **********************************/
 
-	/*
-	if ((readS1Pin5 == 1) && (readS1Pin6 == 1))
+	
+	if (readS2Pin1 == 1)
 	{
 		humiMode = PROPORTIONMODE;
 	}
 
-	if ((readS1Pin5 == 0) && (readS1Pin6 == 0))
+	if (readS2Pin1 == 0)
 	{
 		humiMode = SWITCHMODE;
 	}
 
-	if ((readS1Pin5 == 0) && (readS1Pin6 == 1))
-	{
-		humiMode = COMMUNICATION;
-	}
-	*/
+	
 
 	/***********************************  加湿电压选择  *************************************/
 	if ((readS1Pin3 == 0) && (readS1Pin4 == 0)&& (readS1Pin5 == 0) && (readS1Pin6 == 0))//0000>>120

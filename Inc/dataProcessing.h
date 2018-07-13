@@ -6,6 +6,8 @@
 #define SWITCHMODE		1
 #define COMMUNICATION	2
 
+
+extern uint8_t humiMode;
 extern uint16_t humiCurrent;			//当前电流
 extern uint16_t humiOpening;			//加湿开度
 extern uint16_t humiOpeningFromPLC;
