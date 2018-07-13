@@ -134,6 +134,9 @@
 							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c</name>
 						</file>
 						<file>
+							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_iwdg.c</name>
+						</file>
+						<file>
 							<name>C:\Users\K\STM32Cube\Repository\STM32Cube_FW_F1_V1.6.1\Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</name>
 						</file>
 						<file>

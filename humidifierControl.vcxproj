@@ -85,6 +85,7 @@
     <ClCompile Include="Src\freertos.c" />
     <ClCompile Include="Src\gpio.c" />
     <ClCompile Include="Src\humiCtrl.c" />
+    <ClCompile Include="Src\iwdg.c" />
     <ClCompile Include="Src\main.c" />
     <ClCompile Include="Src\modbusMaster.c" />
     <ClCompile Include="Src\modbusSlave.c" />

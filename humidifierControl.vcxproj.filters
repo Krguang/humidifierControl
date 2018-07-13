@@ -661,6 +661,9 @@
     <ClCompile Include="key.c">
       <Filter>Source files\Src</Filter>
     </ClCompile>
+    <ClCompile Include="Src\iwdg.c">
+      <Filter>Source files\Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inc\dma.h">

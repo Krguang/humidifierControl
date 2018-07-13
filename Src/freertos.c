@@ -59,7 +59,7 @@
 #include "dataProcessing.h"
 #include "humiCtrl.h"
 #include "key.h"
-
+#include "iwdg.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -172,6 +172,7 @@ void StartDataProCessingTask(void const * argument) {
 	{
 		dataProcessing();
 		osDelay(100);
+		HAL_IWDG_Refresh(&hiwdg);
 	}
 }
 
