@@ -117,51 +117,51 @@ void dialSwitchInit() {
 	{
 		humiVoltage = 200;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//0100>>208
+	if ((readS1Pin3 == 0) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 0))//0100>>208
 	{
 		humiVoltage = 208;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//1100>>220
+	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 0))//1100>>220
 	{
 		humiVoltage = 220;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//0010>>230
+	if ((readS1Pin3 == 0) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//0010>>230
 	{
 		humiVoltage = 230;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//1010>>240
+	if ((readS1Pin3 == 1) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//1010>>240
 	{
 		humiVoltage = 240;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//0110>>276
+	if ((readS1Pin3 == 0) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//0110>>276
 	{
 		humiVoltage = 276;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//1110>>346
+	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//1110>>346
 	{
 		humiVoltage = 346;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//0001>>380
+	if ((readS1Pin3 == 0) && (readS1Pin4 == 0) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//0001>>380
 	{
 		humiVoltage = 380;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//1001>>400
+	if ((readS1Pin3 == 1) && (readS1Pin4 == 0) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//1001>>400
 	{
 		humiVoltage = 400;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//0101>>415
+	if ((readS1Pin3 == 0) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//0101>>415
 	{
 		humiVoltage = 415;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//1101>>440
+	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//1101>>440
 	{
 		humiVoltage = 440;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//0011>>460
+	if ((readS1Pin3 == 0) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//0011>>460
 	{
 		humiVoltage = 460;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//1011>>500
+	if ((readS1Pin3 == 1) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//1011>>500
 	{
 		humiVoltage = 500;
 	}
@@ -240,7 +240,7 @@ void dialSwitchInit() {
 		cleanDrainWaterTime = 10 * 60;
 	}
 	
-	//printf("humiCurrentUpperLimit = %d \n", humiCurrentUpperLimit);
+	
 
 /******************************************  额外排水时间  ****************************************/
 	if ((readS1Pin1 == 1) && (readS1Pin2 == 1))

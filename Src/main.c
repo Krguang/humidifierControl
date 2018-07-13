@@ -237,6 +237,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  {
 		  lowerLimitCount++;
 	  }
+
+	  if (1 == overCurrentFlag)
+	  {
+		  overCurrentCount++;
+	  }
+
+	  if (1 == drainWaterFlag)
+	  {
+		  drainWaterCount++;
+	  }
   }
   /* USER CODE END Callback 1 */
 }

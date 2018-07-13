@@ -37,19 +37,3 @@ void key_scan() {
 		}
 	}
 }
-
-void key_service() //第三区 按键服务的应用程序
-{
-	switch (ucKeySec) //按键服务状态切换
-	{
-	case 1:// 1 号键的短按 对应朱兆祺学习板的 S1 键
-		printf("短按\n");
-		ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
-		break;
-	case 2:// 1 号键的长按 对应朱兆祺学习板的 S1 键
-		printf("长按\n");
-		ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
-		break;
-
-	}
-}

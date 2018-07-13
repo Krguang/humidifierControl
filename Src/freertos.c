@@ -187,7 +187,6 @@ void StartCheckKeyPressedTask(void const * argument) {
 	{
 		osDelay(1);
 		key_scan();
-		key_service();
 	}
 }
 
