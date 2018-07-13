@@ -78,6 +78,7 @@
   </ImportGroup>
   <ItemGroup />
   <ItemGroup>
+    <ClCompile Include="key.c" />
     <ClCompile Include="Src\adc.c" />
     <ClCompile Include="Src\dataProcessing.c" />
     <ClCompile Include="Src\dma.c" />
@@ -93,6 +94,7 @@
     <ClCompile Include="Src\system_stm32f1xx.c" />
     <ClCompile Include="Src\tim.c" />
     <ClCompile Include="Src\usart.c" />
+    <ClInclude Include="key.h" />
     <None Include="README.md" />
     <None Include="stm32.mak" />
     <ClCompile Include="$(BSP_ROOT)\STM32F1xxxx\StartupFiles\startup_stm32f103xb.c" />

@@ -58,6 +58,8 @@
 #include "modbusMaster.h"
 #include "dataProcessing.h"
 #include "humiCtrl.h"
+#include "key.h"
+
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -155,6 +157,7 @@ void StartDataProCessingTask(void const * argument) {
 	for (;;)
 	{
 		dataProcessing();
+		humiCtrl();
 		osDelay(100);
 	}
 }
@@ -165,6 +168,7 @@ void StartModbusSlaveTask(void const * argument) {
 		osDelay(10);
 		modbusSlave();
 		Usart2RxMonitor();
+		
 	}
 }
 
@@ -181,8 +185,9 @@ void StartModbusMasterTask(void const * argument) {
 void StartCheckKeyPressedTask(void const * argument) {
 	for (;;)
 	{
-		humiCtrl();
-		osDelay(100);
+		osDelay(1);
+		key_scan();
+		key_service();
 	}
 }
 

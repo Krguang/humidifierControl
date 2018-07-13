@@ -34,7 +34,6 @@ uint16_t startDrainCurrent;			//开始排水电流
 uint16_t stopInletCurrent;			//停止进水电流
 
 
-static void keyProcessing();
 static void osDelaySecond(int s);
 static void drainWater(int s);
 static void cleanBucket();
@@ -113,67 +112,6 @@ void humiCtrl() {
 	}
 }
 
-
-static void keyProcessing() {
-
-	static uint8_t keyTemp[] = { 0,0,0,0 };
-
-	if (ctrlToDisplayTemp[0] & (0x0001 << 0))
-	{
-		keyStatus[0] = 1;
-	}
-	else {
-		keyStatus[0] = 0;
-	}
-
-	if (ctrlToDisplayTemp[0] & (0x0001 << 1))
-	{
-		keyStatus[1] = 1;
-	}
-	else {
-		keyStatus[1] = 0;
-	}
-
-	if (ctrlToDisplayTemp[0] & (0x0001 << 2))
-	{
-		keyStatus[2] = 1;
-	}
-	else {
-		keyStatus[2] = 0;
-	}
-
-	if (ctrlToDisplayTemp[0] & (0x0001 << 3))
-	{
-		keyStatus[3] = 1;
-	}
-	else {
-		keyStatus[3] = 0;
-	}
-
-	if (keyStatus[0] != keyTemp[0])
-	{
-		keyStatus[0] = keyTemp[0];
-		//do something
-	}
-
-	if (keyStatus[1] != keyTemp[1])
-	{
-		keyStatus[1] = keyTemp[1];
-		//do something
-	}
-
-	if (keyStatus[2] != keyTemp[2])
-	{
-		keyStatus[2] = keyTemp[2];
-		//do something
-	}
-
-	if (keyStatus[3] != keyTemp[3])
-	{
-		keyStatus[3] = keyTemp[3];
-		//do something
-	}
-}
 
 static void osDelaySecond(int s) {
 	for (int i = 0; i < s; i++)
