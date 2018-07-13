@@ -2,6 +2,9 @@
 #include "stm32f1xx_hal.h"
 #include "main.h"
 
+
+extern uint8_t manualDrainWaterFlag;
+extern uint16_t manualDrainWaterCount;
 extern uint8_t drainWaterFlag;
 extern uint16_t drainWaterCount;
 extern uint8_t overCurrentFlag;

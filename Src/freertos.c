@@ -71,6 +71,7 @@ osThreadId dataProcessingTaskHandle;
 osThreadId modbusSlaveTaskHandle;
 osThreadId modbusMasterTaskHandle;
 osThreadId checkKeyPressedHandle;
+osThreadId humiCtrlHandle;
 
 /* USER CODE END Variables */
 
@@ -85,6 +86,7 @@ void StartDataProCessingTask(void const * argument);
 void StartModbusSlaveTask(void const * argument);
 void StartModbusMasterTask(void const * argument);
 void StartCheckKeyPressedTask(void const * argument);
+void StartHumiCtrlTask(void const * argument);
 
 /* USER CODE END FunctionPrototypes */
 
@@ -147,17 +149,28 @@ void StartInittTask(void const * argument)
 	osThreadDef(checkKeyPressedTask, StartCheckKeyPressedTask, osPriorityNormal, 0, 128);
 	checkKeyPressedHandle = osThreadCreate(osThread(checkKeyPressedTask), NULL);
 	
+	osThreadDef(humiCtrlTask, StartHumiCtrlTask, osPriorityNormal, 0, 128);
+	humiCtrlHandle = osThreadCreate(osThread(humiCtrlTask), NULL);
+
 	osThreadTerminate(initTaskHandle);
   /* USER CODE END StartInittTask */
 }
 
 /* USER CODE BEGIN Application */
 
+
+void StartHumiCtrlTask(void const * argument) {
+	for (;;)
+	{
+		humiCtrl();
+		osDelay(100);
+	}
+}
+
 void StartDataProCessingTask(void const * argument) {
 	for (;;)
 	{
 		dataProcessing();
-		humiCtrl();
 		osDelay(100);
 	}
 }
@@ -168,7 +181,6 @@ void StartModbusSlaveTask(void const * argument) {
 		osDelay(10);
 		modbusSlave();
 		Usart2RxMonitor();
-		
 	}
 }
 

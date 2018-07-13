@@ -13,7 +13,7 @@
 #define inletValveClose		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_RESET)
 
 #define signalRelayOpen		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET)		//输出信号继电器
-#define signalRelayClose	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET)
+#define signalRelayClose	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET)
 
 #define waterLevelWarnning	HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4)						//高水位报警
 #define switchSignal		HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_15)						//开关信号
@@ -23,6 +23,8 @@ uint8_t keyStatus[4];
 uint8_t startLowerLimitCountFlag;
 uint16_t lowerLimitCount;
 
+uint8_t manualDrainWaterFlag;
+uint16_t manualDrainWaterCount;
 uint8_t drainWaterFlag;
 uint16_t drainWaterCount;
 uint8_t overCurrentFlag;
@@ -47,6 +49,8 @@ static void ledBlink(uint8_t color);
 static void greenLedDark();
 static void humiSuspend();
 static void inletValveOpenWithLimit();
+static void manualDrainWaterScan(int s);
+
 
 void humiCtrl() {
 
@@ -95,6 +99,8 @@ void humiCtrl() {
 
 		if (1 == switchSignal)
 		{
+			signalRelayClose;
+
 			if (humiCurrent >= shutOffCurrentTopLimit)			//超过关断电流，关机
 			{
 				overCurrentFlag = 1;
@@ -106,8 +112,9 @@ void humiCtrl() {
 					if (humiCurrent >= shutOffCurrentTopLimit)
 					{
 						humiSuspend();
-						signalRelayOpen;
 						alarmFlag = 1;
+						ledSwitch(1, 1);
+						ledSwitch(0, 0);
 					}
 				}
 
@@ -119,7 +126,7 @@ void humiCtrl() {
 			{
 				osDelaySecond(1);
 				if (humiCurrent > startDrainCurrent) {
-					drainWater(autoDrainWaterTime);
+					drainWater(autoDrainWaterTime);				//此处排水该为阻塞式，因为排水时接触器会断开，无电流，会误进入其他状态
 				}
 
 				ledSwitch(1, 1);
@@ -141,7 +148,8 @@ void humiCtrl() {
 						lowerLimitCount = 0;
 						alarmFlag = 1;
 						humiSuspend();
-						signalRelayOpen;
+						ledBlink(1);
+						ledSwitch(0, 0);
 					}
 				}
 				ledBlink(1);
@@ -161,17 +169,18 @@ void humiCtrl() {
 			humiSuspend();
 		}
 	}
-	else
+	else if (1 == alarmFlag)
 	{
-		humiSuspend();
+		ledSwitch(1, 1);
+		ledSwitch(0, 0);
+		signalRelayOpen;
 	}
+
 
 	switch (ucKeySec) //按键服务状态切换
 	{
 	case 1:// 1 号键的短按
 		allowRunFlagDrainWater = 0;
-		drainWater(cleanDrainWaterTime);
-		allowRunFlagDrainWater = 1;
 		ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
 		break;
 	case 2:// 1 号键的长按
@@ -180,6 +189,8 @@ void humiCtrl() {
 		break;
 	}
 
+
+	manualDrainWaterScan(10);	//实际值为cleanDrainWaterTime，测试用10s。
 }
 
 
@@ -213,22 +224,38 @@ void humiCtrlInit() {
 	
 }
 
+	
+
+
+static void manualDrainWaterScan(int s) {
+
+	if (0 == allowRunFlagDrainWater)
+	{
+		contactorClose;
+		inletValveClose;
+		drianValveOpen;
+		manualDrainWaterFlag = 1;
+	}
+
+	if (manualDrainWaterCount > s)
+	{
+		manualDrainWaterFlag = 0;
+		manualDrainWaterCount = 0;
+		drianValveClose;
+		contactorOpen;
+		allowRunFlagDrainWater = 1;
+	}
+}
+
 
 //排水 S 秒
 static void drainWater(int s) {
 	contactorClose;
 	inletValveClose;
 	drianValveOpen;
-	//osDelaySecond(s);
-
-	drainWaterFlag = 1;
-	if (drainWaterCount > s)
-	{
-		drainWaterFlag = 0;
-		drainWaterCount = 0;
-		drianValveClose;
-		contactorOpen;
-	}
+	osDelaySecond(s);
+	drianValveClose;
+	contactorOpen;
 }
 
 //洗桶

@@ -247,6 +247,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  {
 		  drainWaterCount++;
 	  }
+
+	  if (1 == manualDrainWaterFlag)
+	  {
+		  manualDrainWaterCount++;
+	  }
   }
   /* USER CODE END Callback 1 */
 }
