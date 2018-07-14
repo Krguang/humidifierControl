@@ -172,7 +172,6 @@ void StartDataProCessingTask(void const * argument) {
 		dataProcessing();
 		osDelay(100);
 		HAL_IWDG_Refresh(&hiwdg);
-		
 	}
 }
 
@@ -199,7 +198,6 @@ void StartCheckKeyPressedTask(void const * argument) {
 	for (;;)
 	{
 		osDelay(100);
-		
 	}
 }
 

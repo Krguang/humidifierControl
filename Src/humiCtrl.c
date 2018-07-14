@@ -18,7 +18,6 @@
 #define waterLevelWarnning	HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4)						//高水位报警
 #define switchSignal		HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_15)						//开关信号
 
-uint8_t keyStatus[4];
 
 uint8_t startLowerLimitCountFlag;
 uint16_t lowerLimitCount;
@@ -61,6 +60,7 @@ void humiCtrl() {
 	//printf("startInletCurrent = %d \n", startInletCurrent);
 	//printf("startDrainCurrent = %d \n", startDrainCurrent);
 	//printf("stopInletCurrent = %d \n", stopInletCurrent);
+
 
 	if (1 == waterLevelWarnning)
 	{
@@ -233,7 +233,7 @@ static void osDelaySecond(int s) {
 
 //加湿数据初始化
 void humiCtrlInit() {
-
+	
 	startLowerLimitCountFlag = 0;
 	lowerLimitCount = 0;
 	alarmFlag = 0;
