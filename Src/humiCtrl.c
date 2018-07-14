@@ -1,7 +1,7 @@
 #include "humiCtrl.h"
 #include "dataProcessing.h"
 #include "cmsis_os.h"
-#include "key.h"
+
 
 #define contactorOpen		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_SET)		//接触器开关
 #define contactorClose		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_RESET)
@@ -67,7 +67,6 @@ void humiCtrl() {
 		inletValveClose;
 	}
 	
-
 	if (humiMode == PROPORTIONMODE)
 	{
 		shutOffCurrentLowerLimit = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.3;
@@ -176,21 +175,43 @@ void humiCtrl() {
 		signalRelayOpen;
 	}
 
-
-	switch (ucKeySec) //按键服务状态切换
+	if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
 	{
-	case 1:// 1 号键的短按
-		allowRunFlagDrainWater = 0;
-		ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
-		break;
-	case 2:// 1 号键的长按
-		humiCtrlInit();
-		ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
-		break;
+		osDelay(20);
+		if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
+		{
+			osDelay(20);
+			while(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0){}
+
+			if (1 == allowRunFlagDrainWater)
+			{
+				allowRunFlagDrainWater = 0;
+			}
+			else {
+				allowRunFlagDrainWater = 1;
+				humiCtrlInit();
+			}
+
+		}
 	}
 
+	
+	
 
-	manualDrainWaterScan(10);	//实际值为cleanDrainWaterTime，测试用10s。
+	//switch (ucKeySec) //按键服务状态切换
+	//{
+	//case 1:// 1 号键的短按
+	//	allowRunFlagDrainWater ^= 1;
+	//	ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
+	//	break;
+	//case 2:// 1 号键的长按
+	//	humiCtrlInit();
+	//	ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
+	//	break;
+	//}
+
+	
+	manualDrainWaterScan(1800);	//实际值为cleanDrainWaterTime，测试用10s。
 }
 
 
@@ -219,9 +240,8 @@ void humiCtrlInit() {
 	allowRunFlagDrainWater = 1;
 	allowRunFlagProportion = 1;
 	signalRelayClose;
-
 	shutOffCurrentTopLimit = humiCurrentUpperLimit*1.414;
-	
+
 }
 
 	
@@ -236,7 +256,7 @@ static void manualDrainWaterScan(int s) {
 		drianValveOpen;
 		manualDrainWaterFlag = 1;
 	}
-
+	//printf("manualDrainWaterCount = %d \n", manualDrainWaterCount);
 	if (manualDrainWaterCount > s)
 	{
 		manualDrainWaterFlag = 0;

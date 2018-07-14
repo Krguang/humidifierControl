@@ -58,7 +58,6 @@
 #include "modbusMaster.h"
 #include "dataProcessing.h"
 #include "humiCtrl.h"
-#include "key.h"
 #include "iwdg.h"
 /* USER CODE END Includes */
 
@@ -173,6 +172,7 @@ void StartDataProCessingTask(void const * argument) {
 		dataProcessing();
 		osDelay(100);
 		HAL_IWDG_Refresh(&hiwdg);
+		
 	}
 }
 
@@ -198,8 +198,8 @@ void StartModbusMasterTask(void const * argument) {
 void StartCheckKeyPressedTask(void const * argument) {
 	for (;;)
 	{
-		osDelay(1);
-		key_scan();
+		osDelay(100);
+		
 	}
 }
 

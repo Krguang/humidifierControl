@@ -658,9 +658,6 @@
     <ClCompile Include="Src\humiCtrl.c">
       <Filter>Source files\Src</Filter>
     </ClCompile>
-    <ClCompile Include="key.c">
-      <Filter>Source files\Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\iwdg.c">
       <Filter>Source files\Src</Filter>
     </ClCompile>
@@ -679,9 +676,6 @@
       <Filter>Header files\Inc</Filter>
     </ClInclude>
     <ClInclude Include="Inc\humiCtrl.h">
-      <Filter>Header files\Inc</Filter>
-    </ClInclude>
-    <ClInclude Include="key.h">
       <Filter>Header files\Inc</Filter>
     </ClInclude>
   </ItemGroup>
