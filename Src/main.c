@@ -236,6 +236,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   {
 	  blinkFlag ^= 1;
 
+
+	  ledBlinkFlagTemp++;
+	  if (ledBlinkFlagTemp > 3)
+	  {
+		  ledBlinkFlagTemp = 0;
+	  }
+
 	  if (1 == startLowerLimitCountFlag)
 	  {
 		  lowerLimitCount++;

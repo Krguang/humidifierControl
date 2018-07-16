@@ -2,6 +2,8 @@
 #include "stm32f1xx_hal.h"
 #include "main.h"
 
+
+extern uint8_t ledBlinkFlagTemp;
 extern uint8_t extraDrainWaterFlag;
 extern uint16_t extraDrainWaterCount;
 extern uint8_t manualDrainWaterFlag;

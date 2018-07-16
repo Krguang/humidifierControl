@@ -19,6 +19,8 @@
 #define switchSignal		HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_15)						//开关信号
 
 
+uint8_t ledBlinkFlagTemp;
+
 uint8_t startLowerLimitCountFlag;
 uint16_t lowerLimitCount;
 
@@ -68,6 +70,8 @@ void humiCtrl() {
 	if (1 == waterLevelWarnning)
 	{
 		inletValveClose;
+		ledSwitch(1, 1);
+		ledSwitch(0, 1);
 	}
 	
 	if (humiMode == PROPORTIONMODE)
@@ -154,8 +158,8 @@ void humiCtrl() {
 						ledSwitch(0, 0);
 					}
 				}
-				ledSwitch(1, 0);
-				ledSwitch(0, 1);
+				ledBlink(1);
+				ledSwitch(0, 0);
 			}
 			else if ((humiCurrent >= startInletCurrent)&&(humiCurrent <= startDrainCurrent))//电流在正常工作范围内
 			{
@@ -205,6 +209,7 @@ void humiCtrl() {
 			if (1 == allowRunFlagDrainWater)
 			{
 				allowRunFlagDrainWater = 0;
+
 			}
 			else {
 				allowRunFlagDrainWater = 1;
@@ -214,6 +219,26 @@ void humiCtrl() {
 		}
 	}
 
+	if (0 == allowRunFlagDrainWater)		//手动排水时，红绿，红绿交错闪烁
+	{
+		switch (ledBlinkFlagTemp)
+		{
+		case 0: ledSwitch(1, 1);
+				ledSwitch(0, 0);
+			break;
+		case 1:	ledSwitch(1, 0);
+				ledSwitch(0, 1);
+			break;
+		case 2:	ledSwitch(1, 1);
+				ledSwitch(0, 0);
+			break;
+		case 3:	ledSwitch(1, 0);
+				ledSwitch(0, 1);
+			break;
+		default:
+			break;
+		}
+	}
 	
 	
 
@@ -266,7 +291,7 @@ void humiCtrlInit() {
 
 	
 
-
+//手动排水
 static void manualDrainWaterScan(int s) {
 
 	if (0 == allowRunFlagDrainWater)
