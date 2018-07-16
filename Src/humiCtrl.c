@@ -6,8 +6,8 @@
 #define contactorOpen		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_SET)		//接触器开关
 #define contactorClose		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_RESET)
 
-#define drianValveOpen		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_7,GPIO_PIN_SET)		//排水
-#define drianValveClose		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_7,GPIO_PIN_RESET)
+#define drainValveOpen		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_7,GPIO_PIN_SET)		//排水
+#define drainValveClose		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_7,GPIO_PIN_RESET)
 
 #define inletValveOpen		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_SET)		//进水
 #define inletValveClose		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_RESET)
@@ -22,6 +22,9 @@
 uint8_t startLowerLimitCountFlag;
 uint16_t lowerLimitCount;
 
+
+uint8_t extraDrainWaterFlag;
+uint16_t extraDrainWaterCount;
 uint8_t manualDrainWaterFlag;
 uint16_t manualDrainWaterCount;
 uint8_t drainWaterFlag;
@@ -135,7 +138,7 @@ void humiCtrl() {
 			else if (humiCurrent < startInletCurrent)			//电流不足，进水
 			{
 
-				drianValveClose;
+				drainValveClose;
 				inletValveOpenWithLimit();
 				contactorOpen;
 				if (humiCurrent <= shutOffCurrentLowerLimit)
@@ -151,16 +154,32 @@ void humiCtrl() {
 						ledSwitch(0, 0);
 					}
 				}
-				ledBlink(1);
-				ledSwitch(0, 0);
+				ledSwitch(1, 0);
+				ledSwitch(0, 1);
 			}
 			else if ((humiCurrent >= startInletCurrent)&&(humiCurrent <= startDrainCurrent))//电流在正常工作范围内
 			{
-				drianValveClose;
+				drainValveClose;
 				inletValveClose;
 				contactorOpen;
 				ledSwitch(1, 0);
 				ledSwitch(0, 1);
+				extraDrainWaterFlag = 1;							//开始额外排水计时
+				if (extraDrainWaterCount > 20*60)					//正常运行20分钟后开始自动排水
+				{
+					extraDrainWaterCount = 0;
+					extraDrainWaterFlag = 0;
+
+					if (extraDrainWaterTime > 0)
+					{
+						contactorClose;
+						inletValveClose;
+						drainValveOpen;
+						osDelaySecond(extraDrainWaterTime);
+						drainValveClose;
+						contactorOpen;
+					}
+				}
 			}
 		}
 		else
@@ -233,7 +252,8 @@ static void osDelaySecond(int s) {
 
 //加湿数据初始化
 void humiCtrlInit() {
-	
+
+	extraDrainWaterFlag = 0;
 	startLowerLimitCountFlag = 0;
 	lowerLimitCount = 0;
 	alarmFlag = 0;
@@ -253,7 +273,7 @@ static void manualDrainWaterScan(int s) {
 	{
 		contactorClose;
 		inletValveClose;
-		drianValveOpen;
+		drainValveOpen;
 		manualDrainWaterFlag = 1;
 	}
 	//printf("manualDrainWaterCount = %d \n", manualDrainWaterCount);
@@ -261,7 +281,7 @@ static void manualDrainWaterScan(int s) {
 	{
 		manualDrainWaterFlag = 0;
 		manualDrainWaterCount = 0;
-		drianValveClose;
+		drainValveClose;
 		contactorOpen;
 		allowRunFlagDrainWater = 1;
 	}
@@ -272,9 +292,9 @@ static void manualDrainWaterScan(int s) {
 static void drainWater(int s) {
 	contactorClose;
 	inletValveClose;
-	drianValveOpen;
+	drainValveOpen;
 	osDelaySecond(s);
-	drianValveClose;
+	drainValveClose;
 	contactorOpen;
 }
 
@@ -283,7 +303,7 @@ static void cleanBucket() {
 
 	while (0 == waterLevelWarnning) {
 
-		drianValveClose;
+		drainValveClose;
 		inletValveOpen;
 		contactorOpen;
 	}
@@ -365,7 +385,7 @@ static void humiSuspend() {
 
 	contactorClose;
 	inletValveClose;
-	drianValveClose;
+	drainValveClose;
 	greenLedDark();
 	ledSwitch(1, 0);
 }
