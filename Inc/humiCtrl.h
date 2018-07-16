@@ -2,7 +2,8 @@
 #include "stm32f1xx_hal.h"
 #include "main.h"
 
-
+extern uint8_t nonstopWorkFlag;			//连续工作标志
+extern uint32_t nonstopWorkCount;			//连续工作计数
 extern uint8_t ledBlinkFlagTemp;
 extern uint8_t extraDrainWaterFlag;
 extern uint16_t extraDrainWaterCount;

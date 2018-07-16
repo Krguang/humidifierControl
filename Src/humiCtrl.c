@@ -18,22 +18,22 @@
 #define waterLevelWarnning	HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4)						//高水位报警
 #define switchSignal		HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_15)						//开关信号
 
+uint8_t nonstopWorkFlag;			//连续工作标志
+uint32_t nonstopWorkCount;			//连续工作计数
+uint8_t ledBlinkFlagTemp;			//红绿灯交错闪烁标志
 
-uint8_t ledBlinkFlagTemp;
+uint8_t startLowerLimitCountFlag;	//低电流计数标志
+uint16_t lowerLimitCount;			//低电流计数
 
-uint8_t startLowerLimitCountFlag;
-uint16_t lowerLimitCount;
-
-
-uint8_t extraDrainWaterFlag;
-uint16_t extraDrainWaterCount;
-uint8_t manualDrainWaterFlag;
-uint16_t manualDrainWaterCount;
-uint8_t drainWaterFlag;
-uint16_t drainWaterCount;
-uint8_t overCurrentFlag;
-uint16_t overCurrentCount;
-uint8_t blinkFlag;
+uint8_t extraDrainWaterFlag;		//外部排水标志
+uint16_t extraDrainWaterCount;		//外部排水计数
+uint8_t manualDrainWaterFlag;		//手动排水标志
+uint16_t manualDrainWaterCount;		//手动排水计数
+uint8_t drainWaterFlag;				//排水标志
+uint16_t drainWaterCount;			//排水计数
+uint8_t overCurrentFlag;			//超电流标志
+uint16_t overCurrentCount;			//超电流计数
+uint8_t blinkFlag;					//led闪烁标志
 uint8_t alarmFlag;					//报警标志
 uint8_t allowRunFlagDrainWater;		//允许运行信号，排水相关
 uint8_t allowRunFlagProportion;		//允许运行信号，比例相关
@@ -58,14 +58,8 @@ static void manualDrainWaterScan(int s);
 
 void humiCtrl() {
 
-	//printf("humiCurrent = %d \n", humiCurrent);
-	//printf("humiCurrentUpperLimit = %d \n", humiCurrentUpperLimit);
-	//printf("shutOffCurrentTopLimit = %d \n", shutOffCurrentTopLimit);
-	//printf("shutOffCurrentLowerLimit = %d \n", shutOffCurrentLowerLimit);
-	//printf("startInletCurrent = %d \n", startInletCurrent);
-	//printf("startDrainCurrent = %d \n", startDrainCurrent);
-	//printf("stopInletCurrent = %d \n", stopInletCurrent);
 
+	
 
 	if (1 == waterLevelWarnning)
 	{
@@ -184,11 +178,26 @@ void humiCtrl() {
 						contactorOpen;
 					}
 				}
+
+				//连续工作600小时后绿灯闪烁
+				if (1 == nonstopWorkFlag)
+				{
+					if (nonstopWorkCount > 600*3600) {
+
+						ledBlink(0);
+					}
+				}
+
 			}
+
+
+			nonstopWorkFlag = 1;
 		}
 		else
 		{
 			humiSuspend();
+
+			nonstopWorkFlag = 0;
 		}
 	}
 	else if (1 == alarmFlag)
@@ -196,6 +205,7 @@ void humiCtrl() {
 		ledSwitch(1, 1);
 		ledSwitch(0, 0);
 		signalRelayOpen;
+		nonstopWorkFlag = 0;
 	}
 
 	if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
@@ -218,6 +228,8 @@ void humiCtrl() {
 
 		}
 	}
+
+	
 
 	if (0 == allowRunFlagDrainWater)		//手动排水时，红绿，红绿交错闪烁
 	{
