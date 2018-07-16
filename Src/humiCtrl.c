@@ -21,7 +21,8 @@
 uint8_t nonstopWorkFlag;			//连续工作标志
 uint32_t nonstopWorkCount;			//连续工作计数
 
-uint8_t ledBlinkFlagTemp;			//红绿灯交错闪烁标志
+uint8_t ledBlinkFlagTemp4;			//红绿灯交错闪烁标志
+uint8_t ledBlinkFlagTemp8;
 
 uint8_t startLowerLimitCountFlag;	//低电流计数标志
 uint16_t lowerLimitCount;			//低电流计数
@@ -243,7 +244,7 @@ void humiCtrl() {
 
 		if (0 == allowRunFlagDrainWater)		//手动排水时，红绿，红绿交错闪烁
 		{
-			switch (ledBlinkFlagTemp)
+			switch (ledBlinkFlagTemp4)
 			{
 			case 0: ledSwitch(1, 1);
 				ledSwitch(0, 0);
@@ -278,6 +279,38 @@ void humiCtrl() {
 
 
 		manualDrainWaterScan(1800);	//实际值为30分钟，测试用10s。
+	}
+	else
+	{
+		switch (ledBlinkFlagTemp8)
+		{
+		case 0: ledSwitch(1, 1);
+			ledSwitch(0, 0);
+			break;
+		case 1:	ledSwitch(1, 0);
+			ledSwitch(0, 0);
+			break;
+		case 2: ledSwitch(1, 1);
+			ledSwitch(0, 0);
+			break;
+		case 3:	ledSwitch(1, 0);
+			ledSwitch(0, 0);
+			break;
+		case 4: ledSwitch(0, 0);
+			ledSwitch(0, 1);
+			break;
+		case 5:	ledSwitch(0, 0);
+			ledSwitch(0, 0);
+			break;
+		case 6:	ledSwitch(0, 0);
+			ledSwitch(0, 1);
+			break;
+		case 7:	ledSwitch(0, 0);
+			ledSwitch(0, 0);
+			break;
+		default:
+			break;
+		}
 	}
 }
 
