@@ -20,6 +20,7 @@
 
 uint8_t nonstopWorkFlag;			//连续工作标志
 uint32_t nonstopWorkCount;			//连续工作计数
+
 uint8_t ledBlinkFlagTemp;			//红绿灯交错闪烁标志
 
 uint8_t startLowerLimitCountFlag;	//低电流计数标志
@@ -27,14 +28,20 @@ uint16_t lowerLimitCount;			//低电流计数
 
 uint8_t extraDrainWaterFlag;		//外部排水标志
 uint16_t extraDrainWaterCount;		//外部排水计数
+
 uint8_t manualDrainWaterFlag;		//手动排水标志
 uint16_t manualDrainWaterCount;		//手动排水计数
+
 uint8_t drainWaterFlag;				//排水标志
 uint16_t drainWaterCount;			//排水计数
+
 uint8_t overCurrentFlag;			//超电流标志
 uint16_t overCurrentCount;			//超电流计数
+
 uint8_t blinkFlag;					//led闪烁标志
+
 uint8_t alarmFlag;					//报警标志
+
 uint8_t allowRunFlagDrainWater;		//允许运行信号，排水相关
 uint8_t allowRunFlagProportion;		//允许运行信号，比例相关
 
@@ -68,206 +75,210 @@ void humiCtrl() {
 		ledSwitch(0, 1);
 	}
 	
-	if (humiMode == PROPORTIONMODE)
+
+	if (1 == switchSetFlag)
 	{
-		shutOffCurrentLowerLimit = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.3;
-		startInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.9;
-		stopInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.1;
-		startDrainCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.2;
-
-		if (humiOpening < 250)				//当处在比例模式时，比例信号小于25%，不开机
+		if (humiMode == PROPORTIONMODE)
 		{
-			allowRunFlagProportion = 0;
+			shutOffCurrentLowerLimit = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.3;
+			startInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.9;
+			stopInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.1;
+			startDrainCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.2;
+
+			if (humiOpening < 250)				//当处在比例模式时，比例信号小于25%，不开机
+			{
+				allowRunFlagProportion = 0;
+			}
+			else
+			{
+				allowRunFlagProportion = 1;
+			}
 		}
-		else
+		else if (humiMode == SWITCHMODE)
 		{
-			allowRunFlagProportion = 1;
+			shutOffCurrentLowerLimit = humiCurrentUpperLimit * powerProportion / 1000 * 0.3;
+			startInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 0.9;
+			stopInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.1;
+			startDrainCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.2;
 		}
-	}
-	else if (humiMode == SWITCHMODE)
-	{
-		shutOffCurrentLowerLimit = humiCurrentUpperLimit * powerProportion / 1000 * 0.3;
-		startInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 0.9;
-		stopInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.1;
-		startDrainCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.2;
-	}
-	
 
-	//运行需满足四个条件：1.开关信号闭合。2.非排水状态。3.非报警。4.比例模式时，比例值大于25%
-	if ((1 == allowRunFlagDrainWater)&&(0 == alarmFlag)&&(1 == allowRunFlagProportion))
-	{
 
-		if (1 == switchSignal)
+		//运行需满足四个条件：1.开关信号闭合。2.非排水状态。3.非报警。4.比例模式时，比例值大于25%
+		if ((1 == allowRunFlagDrainWater) && (0 == alarmFlag) && (1 == allowRunFlagProportion))
 		{
-			signalRelayClose;
 
-			if (humiCurrent >= shutOffCurrentTopLimit)			//超过关断电流，关机
+			if (1 == switchSignal)
 			{
-				overCurrentFlag = 1;
-				if (overCurrentCount > 15)
+				signalRelayClose;
+
+				if (humiCurrent >= shutOffCurrentTopLimit)			//超过关断电流，关机
 				{
-					overCurrentFlag = 0;
-					overCurrentCount = 0;
-					//osDelaySecond(15);
-					if (humiCurrent >= shutOffCurrentTopLimit)
+					overCurrentFlag = 1;
+					if (overCurrentCount > 15)
 					{
-						humiSuspend();
-						alarmFlag = 1;
-						ledSwitch(1, 1);
-						ledSwitch(0, 0);
+						overCurrentFlag = 0;
+						overCurrentCount = 0;
+						//osDelaySecond(15);
+						if (humiCurrent >= shutOffCurrentTopLimit)
+						{
+							humiSuspend();
+							alarmFlag = 1;
+							ledSwitch(1, 1);
+							ledSwitch(0, 0);
+						}
 					}
+
+					ledSwitch(1, 1);
+					ledSwitch(0, 0);
+
 				}
-
-				ledSwitch(1, 1);
-				ledSwitch(0, 0);
-
-			}
-			else if (humiCurrent > startDrainCurrent)			//超过排水电流，排水
-			{
-				osDelaySecond(1);
-				if (humiCurrent > startDrainCurrent) {
-					drainWater(autoDrainWaterTime);				//此处排水该为阻塞式，因为排水时接触器会断开，无电流，会误进入其他状态
-				}
-
-				ledSwitch(1, 1);
-				ledSwitch(0, 0);
-			}
-
-			else if (humiCurrent < startInletCurrent)			//电流不足，进水
-			{
-
-				drainValveClose;
-				inletValveOpenWithLimit();
-				contactorOpen;
-				if (humiCurrent <= shutOffCurrentLowerLimit)
+				else if (humiCurrent > startDrainCurrent)			//超过排水电流，排水
 				{
-					startLowerLimitCountFlag = 1;
-					if (lowerLimitCount > 30)	//测试为30秒，实际为30*60秒
+					osDelaySecond(1);
+					if (humiCurrent > startDrainCurrent) {
+						drainWater(autoDrainWaterTime);				//此处排水该为阻塞式，因为排水时接触器会断开，无电流，会误进入其他状态
+					}
+
+					ledSwitch(1, 1);
+					ledSwitch(0, 0);
+				}
+
+				else if (humiCurrent < startInletCurrent)			//电流不足，进水
+				{
+
+					drainValveClose;
+					inletValveOpenWithLimit();
+					contactorOpen;
+					if (humiCurrent <= shutOffCurrentLowerLimit)
 					{
-						startLowerLimitCountFlag = 0;
-						lowerLimitCount = 0;
-						alarmFlag = 1;
-						humiSuspend();
-						ledBlink(1);
-						ledSwitch(0, 0);
+						startLowerLimitCountFlag = 1;
+						if (lowerLimitCount > 30)	//测试为30秒，实际为30*60秒
+						{
+							startLowerLimitCountFlag = 0;
+							lowerLimitCount = 0;
+							alarmFlag = 1;
+							humiSuspend();
+							ledBlink(1);
+							ledSwitch(0, 0);
+						}
 					}
+					ledBlink(1);
+					ledSwitch(0, 0);
 				}
-				ledBlink(1);
-				ledSwitch(0, 0);
-			}
-			else if ((humiCurrent >= startInletCurrent)&&(humiCurrent <= startDrainCurrent))//电流在正常工作范围内
-			{
-				drainValveClose;
-				inletValveClose;
-				contactorOpen;
-				ledSwitch(1, 0);
-				ledSwitch(0, 1);
-				extraDrainWaterFlag = 1;							//开始额外排水计时
-				if (extraDrainWaterCount > 20*60)					//正常运行20分钟后开始自动排水
+				else if ((humiCurrent >= startInletCurrent) && (humiCurrent <= startDrainCurrent))//电流在正常工作范围内
 				{
-					extraDrainWaterCount = 0;
-					extraDrainWaterFlag = 0;
-
-					if (extraDrainWaterTime > 0)
+					drainValveClose;
+					inletValveClose;
+					contactorOpen;
+					ledSwitch(1, 0);
+					ledSwitch(0, 1);
+					extraDrainWaterFlag = 1;							//开始额外排水计时
+					if (extraDrainWaterCount > 20 * 60)					//正常运行20分钟后开始自动排水
 					{
-						contactorClose;
-						inletValveClose;
-						drainValveOpen;
-						osDelaySecond(extraDrainWaterTime);
-						drainValveClose;
-						contactorOpen;
+						extraDrainWaterCount = 0;
+						extraDrainWaterFlag = 0;
+
+						if (extraDrainWaterTime > 0)
+						{
+							contactorClose;
+							inletValveClose;
+							drainValveOpen;
+							osDelaySecond(extraDrainWaterTime);
+							drainValveClose;
+							contactorOpen;
+						}
 					}
+
+					//连续工作600小时后绿灯闪烁,报警继电器吸合
+					if (1 == nonstopWorkFlag)
+					{
+						if (nonstopWorkCount > 600 * 3600) {
+
+							ledBlink(0);
+							signalRelayOpen;
+						}
+					}
+
 				}
 
-				//连续工作600小时后绿灯闪烁
-				if (1 == nonstopWorkFlag)
-				{
-					if (nonstopWorkCount > 600*3600) {
 
-						ledBlink(0);
-					}
-				}
-
+				nonstopWorkFlag = 1;
 			}
+			else
+			{
+				humiSuspend();
 
-
-			nonstopWorkFlag = 1;
+				nonstopWorkFlag = 0;
+			}
 		}
-		else
+		else if (1 == alarmFlag)
 		{
-			humiSuspend();
-
+			ledSwitch(1, 1);
+			ledSwitch(0, 0);
+			signalRelayOpen;
 			nonstopWorkFlag = 0;
 		}
-	}
-	else if (1 == alarmFlag)
-	{
-		ledSwitch(1, 1);
-		ledSwitch(0, 0);
-		signalRelayOpen;
-		nonstopWorkFlag = 0;
-	}
 
-	if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
-	{
-		osDelay(20);
 		if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
 		{
 			osDelay(20);
-			while(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0){}
-
-			if (1 == allowRunFlagDrainWater)
+			if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
 			{
-				allowRunFlagDrainWater = 0;
+				osDelay(20);
+				while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0) {}
+
+				if (1 == allowRunFlagDrainWater)
+				{
+					allowRunFlagDrainWater = 0;
+				}
+				else {
+					allowRunFlagDrainWater = 1;
+					humiCtrlInit();
+				}
 
 			}
-			else {
-				allowRunFlagDrainWater = 1;
-				humiCtrlInit();
-			}
-
 		}
-	}
 
-	
 
-	if (0 == allowRunFlagDrainWater)		//手动排水时，红绿，红绿交错闪烁
-	{
-		switch (ledBlinkFlagTemp)
+
+		if (0 == allowRunFlagDrainWater)		//手动排水时，红绿，红绿交错闪烁
 		{
-		case 0: ledSwitch(1, 1);
+			switch (ledBlinkFlagTemp)
+			{
+			case 0: ledSwitch(1, 1);
 				ledSwitch(0, 0);
-			break;
-		case 1:	ledSwitch(1, 0);
+				break;
+			case 1:	ledSwitch(1, 0);
 				ledSwitch(0, 1);
-			break;
-		case 2:	ledSwitch(1, 1);
+				break;
+			case 2:	ledSwitch(1, 1);
 				ledSwitch(0, 0);
-			break;
-		case 3:	ledSwitch(1, 0);
+				break;
+			case 3:	ledSwitch(1, 0);
 				ledSwitch(0, 1);
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
+			}
 		}
+
+
+
+		//switch (ucKeySec) //按键服务状态切换
+		//{
+		//case 1:// 1 号键的短按
+		//	allowRunFlagDrainWater ^= 1;
+		//	ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
+		//	break;
+		//case 2:// 1 号键的长按
+		//	humiCtrlInit();
+		//	ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
+		//	break;
+		//}
+
+
+		manualDrainWaterScan(1800);	//实际值为30分钟，测试用10s。
 	}
-	
-	
-
-	//switch (ucKeySec) //按键服务状态切换
-	//{
-	//case 1:// 1 号键的短按
-	//	allowRunFlagDrainWater ^= 1;
-	//	ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
-	//	break;
-	//case 2:// 1 号键的长按
-	//	humiCtrlInit();
-	//	ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
-	//	break;
-	//}
-
-	
-	manualDrainWaterScan(1800);	//实际值为cleanDrainWaterTime，测试用10s。
 }
 
 

@@ -14,6 +14,7 @@
 #define readS1Pin5			HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_10)
 #define readS1Pin6			HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_2)
 
+uint8_t switchSetFlag;						//拨码开关初始化标志：未初始化：0；已初始化：1
 uint8_t humiMode;
 uint16_t alarmCode;
 uint16_t humiCurrent;
@@ -91,7 +92,20 @@ static uint16_t getIFromP(uint16_t p) {
 
 void dialSwitchInit() {
 
-	//printf("start dialSwitchInit\n");
+	//判断拨码开关是否初始化。未初始化：0；已初始化：1
+
+	int switchSum = readS1Pin1 + readS1Pin2 + readS1Pin3 + readS1Pin4 + readS1Pin5 + readS1Pin6 +
+					readS2Pin1 + readS2Pin2 + readS2Pin3 + readS2Pin4 + readS2Pin5 + readS2Pin6;
+
+	if ((0 == switchSum)||(12 == switchSum))
+	{
+		switchSetFlag = 0;
+	}
+	else {
+		switchSetFlag = 1;
+	}
+
+
 
 	/***********************************  控制模式选择  **********************************/
 
