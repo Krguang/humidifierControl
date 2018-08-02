@@ -15,7 +15,7 @@
 #define signalRelayOpen		HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET)		//输出信号继电器
 #define signalRelayClose	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET)
 
-#define waterLevelWarnning	HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4)						//高水位报警
+#define waterLevelWarning	HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4)						//高水位报警
 #define switchSignal		HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_15)						//开关信号
 
 uint8_t nonstopWorkFlag;			//连续工作标志
@@ -76,7 +76,7 @@ static void manualDrainWaterScan(int s);
 
 void humiCtrl() {
 
-	if (1 == waterLevelWarnning)
+	if (1 == waterLevelWarning)
 	{
 		inletValveClose;
 		ledSwitch(1, 1);
@@ -286,7 +286,7 @@ void humiCtrl() {
 			}
 		}
 
-		manualDrainWaterScan(1800);	//实际值为30分钟，测试用10s。
+		manualDrainWaterScan(1800);	//手动排水的扫描函数。实际值为30分钟，测试用10s。
 	}
 	else
 	{
@@ -325,7 +325,7 @@ void humiCtrl() {
 
 static void inletValveOpenWithLimit() {
 
-	if (0 == waterLevelWarnning)
+	if (0 == waterLevelWarning)
 	{
 		inletValveOpen;
 	}
@@ -390,7 +390,7 @@ static void drainWater(int s) {
 //洗桶
 static void cleanBucket() {
 
-	while (0 == waterLevelWarnning) {
+	while (0 == waterLevelWarning) {
 
 		drainValveClose;
 		inletValveOpen;
