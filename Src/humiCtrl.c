@@ -45,6 +45,9 @@ uint8_t alarmFlag;					//报警标志
 
 uint8_t allowRunFlagDrainWater;		//允许运行信号，排水相关
 uint8_t allowRunFlagProportion;		//允许运行信号，比例相关
+uint8_t proportionLessThan5Flag;	//比例信号小于5%标志
+uint8_t proportionGreaterThan25Flag;//比例信号大于25%标志
+
 
 uint16_t shutOffCurrentTopLimit;	//关断电流上限
 uint16_t shutOffCurrentLowerLimit;	//关断电流下限
@@ -69,7 +72,7 @@ static void manualDrainWaterScan(int s);
 		设置电流90%			设置电流110%			基准电流120%			基准电流140%
 ---------------------------------------------------------------------------------------
 			|		排水			|					|					|
-	进水		|		进水			|		停止进水		|		排水			|		15s后停止工作
+	进水		|		进水			|		停止进水		|		排水			|	15s后停止工作
 			|		不动作		|					|					|
 
 */
@@ -93,13 +96,31 @@ void humiCtrl() {
 			stopInletCurrent = humiCurrentUpperLimit*humiOpening / 1000.0 * powerProportion / 1000.0 * 1.1;
 			//startDrainCurrent = humiCurrentUpperLimit* 1.2;
 
-			if (humiOpening < 250)				//当处在比例模式时，比例信号小于25%，不开机
+			if (humiOpening < 50)
 			{
+				proportionLessThan5Flag = 1;
+				proportionGreaterThan25Flag = 0;
 				allowRunFlagProportion = 0;
 			}
-			else
+
+			if (humiOpening > 250)
 			{
+				proportionLessThan5Flag = 0;
+				proportionGreaterThan25Flag = 1;
 				allowRunFlagProportion = 1;
+			}
+
+			if ((humiOpening >= 50)&&(humiOpening <= 250))				//当处在比例模式时，比例信号小于25%，不开机
+			{
+				if (1 == proportionLessThan5Flag)
+				{
+					allowRunFlagProportion = 0;
+				}
+
+				if (1 == proportionGreaterThan25Flag)
+				{
+					allowRunFlagProportion = 1;
+				}
 			}
 		}
 		else if (humiMode == SWITCHMODE)
@@ -235,13 +256,18 @@ void humiCtrl() {
 				nonstopWorkFlag = 0;
 			}
 		}
-		else if (1 == alarmFlag)
+		else if (1 == alarmFlag)		//有报警信号
 		{
 			ledSwitch(1, 1);
 			ledSwitch(0, 0);
 			signalRelayOpen;
 			nonstopWorkFlag = 0;
 		}
+		else if (0 == allowRunFlagProportion)	//比例过低，关闭机器
+		{
+			humiSuspend();
+		}
+
 
 		if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
 		{
