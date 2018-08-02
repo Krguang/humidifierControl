@@ -40,8 +40,11 @@ uint8_t overCurrentFlag;			//超电流标志
 uint16_t overCurrentCount;			//超电流计数
 
 uint8_t blinkFlag;					//led闪烁标志
-
 uint8_t alarmFlag;					//报警标志
+
+uint8_t waterValveFailureFlag;	//水阀故障标记	无故障:1;有故障:1
+uint8_t inletFlag;					//进水标志		进水开：1；进水关：0
+uint16_t inletTimeCount;			//进水时间计数
 
 uint8_t allowRunFlagDrainWater;		//允许运行信号，排水相关
 uint8_t allowRunFlagProportion;		//允许运行信号，比例相关
@@ -79,14 +82,26 @@ static void manualDrainWaterScan(int s);
 
 void humiCtrl() {
 
-	if (1 == waterLevelWarning)
+	inletFlag = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);	//读取进水阀状态
+
+	if (inletTimeCount > 30)			//进水时间计时，超过30分钟，判断为进水阀或出水阀损坏			
+	{
+		waterValveFailureFlag = 0;
+	}
+
+	/*
+	printf("inletFlag = %d \n", inletFlag);
+	printf("inletTimeCount = %d \n", inletTimeCount);
+	printf("waterValveFailureFlag = %d \n", waterValveFailureFlag);
+	*/
+
+	if (1 == waterLevelWarning)			//高水位报警
 	{
 		inletValveClose;
 		ledSwitch(1, 1);
 		ledSwitch(0, 1);
 	}
 	
-
 	if (1 == switchSetFlag)				//拨码开关正常初始化
 	{
 		if (humiMode == PROPORTIONMODE)
@@ -94,7 +109,6 @@ void humiCtrl() {
 			shutOffCurrentLowerLimit = humiCurrentUpperLimit*humiOpening / 1000.0 * powerProportion / 1000.0 * 0.3;
 			startInletCurrent = humiCurrentUpperLimit*humiOpening / 1000.0 * powerProportion / 1000.0 * 0.9;
 			stopInletCurrent = humiCurrentUpperLimit*humiOpening / 1000.0 * powerProportion / 1000.0 * 1.1;
-			//startDrainCurrent = humiCurrentUpperLimit* 1.2;
 
 			if (humiOpening < 50)						//当比例信号低于5%是记录标志位
 			{
@@ -128,9 +142,8 @@ void humiCtrl() {
 			shutOffCurrentLowerLimit = humiCurrentUpperLimit * powerProportion / 1000 * 0.3;
 			startInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 0.9;
 			stopInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.1;
-			//startDrainCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.2;
 		}
-
+/*
 
 		printf("当前电流 = %d \n", humiCurrent);
 		printf("能量开度 = %d \n", powerProportion);
@@ -141,10 +154,10 @@ void humiCtrl() {
 		printf("开始进水电流 = %d \n", startInletCurrent);
 		printf("停止进水电流 = %d \n", stopInletCurrent);
 		printf("开始排水电流 = %d \n\n", startDrainCurrent);
-
+*/
 
 		//运行需满足四个条件：1.开关信号闭合。2.非排水状态。3.非报警。4.比例模式时，比例值大于25%
-		if ((1 == allowRunFlagDrainWater) && (0 == alarmFlag) && (1 == allowRunFlagProportion))
+		if ((1 == allowRunFlagDrainWater) && (0 == alarmFlag) && (1 == allowRunFlagProportion)&&(1 == waterValveFailureFlag))
 		{
 
 			if (1 == switchSignal)
@@ -252,7 +265,6 @@ void humiCtrl() {
 			else
 			{
 				humiSuspend();
-
 				nonstopWorkFlag = 0;
 			}
 		}
@@ -267,7 +279,12 @@ void humiCtrl() {
 		{
 			humiSuspend();
 		}
-
+		else if(0 == waterValveFailureFlag)		//水阀损坏
+		{
+			humiSuspend();
+			ledBlink(1);
+			ledSwitch(0, 0);
+		}
 
 		if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
 		{
@@ -372,6 +389,7 @@ void humiCtrlInit() {
 	alarmFlag = 0;
 	allowRunFlagDrainWater = 1;
 	allowRunFlagProportion = 1;
+	waterValveFailureFlag = 1;
 	signalRelayClose;
 	shutOffCurrentTopLimit = humiCurrentUpperLimit*1.4;
 	startDrainCurrent = humiCurrentUpperLimit * 1.2;

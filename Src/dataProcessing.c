@@ -94,7 +94,6 @@ void dialSwitchInit() {
 
 	/***********************************  控制模式选择  **********************************/
 
-	
 	if (readS2Pin1 == 1)
 	{
 		humiMode = PROPORTIONMODE;
@@ -104,8 +103,6 @@ void dialSwitchInit() {
 	{
 		humiMode = SWITCHMODE;
 	}
-
-	
 
 	/***********************************  加湿电压选择  *************************************/
 	if ((readS1Pin3 == 0) && (readS1Pin4 == 0)&& (readS1Pin5 == 0) && (readS1Pin6 == 0))//0000>>120

@@ -234,50 +234,63 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 1 */
   if (htim->Instance == TIM3)//tim3 1s中断
   {
-	  blinkFlag ^= 1;
+	  blinkFlag ^= 1;						//指示灯闪烁标志
 
-
-	  ledBlinkFlagTemp4++;
+	  ledBlinkFlagTemp4++;					//指示灯闪烁4个过程
 	  if (ledBlinkFlagTemp4 > 3)
 	  {
 		  ledBlinkFlagTemp4 = 0;
 	  }
 
-	  ledBlinkFlagTemp8++;
+	  ledBlinkFlagTemp8++;					//指示灯闪烁8个过程
 	  if (ledBlinkFlagTemp8 > 7)
 	  {
 		  ledBlinkFlagTemp8 = 0;
 	  }
 
-	  if (1 == startLowerLimitCountFlag)
+	  if (1 == startLowerLimitCountFlag)	//低电流计时
 	  {
 		  lowerLimitCount++;
 	  }
 
-	  if (1 == overCurrentFlag)
+	  if (1 == overCurrentFlag)				//超电流计时
 	  {
 		  overCurrentCount++;
 	  }
 
-	  if (1 == drainWaterFlag)
+	  if (1 == drainWaterFlag)				//排水计时
 	  {
 		  drainWaterCount++;
 	  }
 
-	  if (1 == manualDrainWaterFlag)
+	  if (1 == manualDrainWaterFlag)		//手动排水计时
 	  {
 		  manualDrainWaterCount++;
 	  }
 
-	  if (1 == extraDrainWaterFlag)
+	  if (1 == extraDrainWaterFlag)			//额外排水计时
 	  {
 		  extraDrainWaterCount++;
 	  }
 
-	  if (1 == nonstopWorkFlag)
+	  if (1 == nonstopWorkFlag)				//连续工作计时
 	  {
 		  nonstopWorkCount++;
 	  }
+
+	  if (1 == inletFlag)
+	  {
+		  inletTimeCount++;
+		  if (inletTimeCount > 30000)
+		  {
+			  inletTimeCount = 30000;
+		  }
+	  }
+	  else {
+		  inletTimeCount = 0;
+	  }
+
+
   }
   /* USER CODE END Callback 1 */
 }
