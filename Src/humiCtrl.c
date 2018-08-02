@@ -275,13 +275,14 @@ void humiCtrl() {
 			signalRelayOpen;
 			nonstopWorkFlag = 0;
 		}
-		else if (0 == allowRunFlagProportion)	//比例过低，关闭机器
+		else if (0 == allowRunFlagProportion)	//外部比例信号过低，停止加湿
 		{
 			humiSuspend();
 		}
 		else if(0 == waterValveFailureFlag)		//水阀损坏
 		{
 			humiSuspend();
+			signalRelayOpen;
 			ledBlink(1);
 			ledSwitch(0, 0);
 		}

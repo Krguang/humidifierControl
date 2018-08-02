@@ -119,6 +119,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM3_Init();
   MX_IWDG_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
   __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);    //使能空闲中断
@@ -126,8 +127,8 @@ int main(void)
 
   HAL_ADCEx_Calibration_Start(&hadc1);
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_ConvertedValue, 3);
+  HAL_TIM_Base_Start_IT(&htim2);
   HAL_TIM_Base_Start_IT(&htim3);
-
 
   /* USER CODE END 2 */
 
@@ -232,7 +233,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-  if (htim->Instance == TIM3)//tim3 1s中断
+
+  if (htim->Instance == TIM2)
   {
 	  blinkFlag ^= 1;						//指示灯闪烁标志
 
@@ -247,6 +249,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  {
 		  ledBlinkFlagTemp8 = 0;
 	  }
+  }
+  else if (htim->Instance == TIM3)//tim3 1s中断
+  {
+	  
 
 	  if (1 == startLowerLimitCountFlag)	//低电流计时
 	  {
