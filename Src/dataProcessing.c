@@ -15,6 +15,8 @@
 #define readS1Pin6			HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_2)
 
 uint8_t switchSetFlag;						//拨码开关初始化标志：未初始化：0；已初始化：1
+uint8_t switchSetFlagV;						//拨码开关初始化标志:电压设置相关
+uint8_t switchSetFlagI;						//拨码开关初始化标志:电流设置相关
 uint8_t humiMode;
 uint16_t alarmCode;
 uint16_t humiCurrent;
@@ -33,9 +35,6 @@ uint16_t ctrlToPLCTemp[255];
 
 volatile uint16_t ADC_ConvertedValue[3];
 uint32_t ADC_Average[3];
-
-//uint8_t humiMode;
-
 
 
 static void adcProcesdsing() {
@@ -92,20 +91,6 @@ static uint16_t getIFromP(uint16_t p) {
 
 void dialSwitchInit() {
 
-	//判断拨码开关是否初始化。未初始化：0；已初始化：1
-
-	int switchSum = readS1Pin1 + readS1Pin2 + readS1Pin3 + readS1Pin4 + readS1Pin5 + readS1Pin6 +
-					readS2Pin1 + readS2Pin2 + readS2Pin3 + readS2Pin4 + readS2Pin5 + readS2Pin6;
-
-	if ((0 == switchSum)||(12 == switchSum))
-	{
-		switchSetFlag = 0;
-	}
-	else {
-		switchSetFlag = 1;
-	}
-
-
 
 	/***********************************  控制模式选择  **********************************/
 
@@ -126,58 +111,76 @@ void dialSwitchInit() {
 	if ((readS1Pin3 == 0) && (readS1Pin4 == 0)&& (readS1Pin5 == 0) && (readS1Pin6 == 0))//0000>>120
 	{
 		humiVoltage = 120;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 0) && (readS1Pin5 == 0) && (readS1Pin6 == 0))//1000>>200
+	else if ((readS1Pin3 == 1) && (readS1Pin4 == 0) && (readS1Pin5 == 0) && (readS1Pin6 == 0))//1000>>200
 	{
 		humiVoltage = 200;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 0) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 0))//0100>>208
+	else if ((readS1Pin3 == 0) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 0))//0100>>208
 	{
 		humiVoltage = 208;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 0))//1100>>220
+	else if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 0))//1100>>220
 	{
 		humiVoltage = 220;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 0) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//0010>>230
+	else if ((readS1Pin3 == 0) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//0010>>230
 	{
 		humiVoltage = 230;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//1010>>240
+	else if ((readS1Pin3 == 1) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//1010>>240
 	{
 		humiVoltage = 240;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 0) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//0110>>276
+	else if ((readS1Pin3 == 0) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//0110>>276
 	{
 		humiVoltage = 276;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//1110>>346
+	else if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 1) && (readS1Pin6 == 0))//1110>>346
 	{
 		humiVoltage = 346;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 0) && (readS1Pin4 == 0) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//0001>>380
+	else if ((readS1Pin3 == 0) && (readS1Pin4 == 0) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//0001>>380
 	{
 		humiVoltage = 380;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 0) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//1001>>400
+	else if ((readS1Pin3 == 1) && (readS1Pin4 == 0) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//1001>>400
 	{
 		humiVoltage = 400;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 0) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//0101>>415
+	else if ((readS1Pin3 == 0) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//0101>>415
 	{
 		humiVoltage = 415;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//1101>>440
+	else if ((readS1Pin3 == 1) && (readS1Pin4 == 1) && (readS1Pin5 == 0) && (readS1Pin6 == 1))//1101>>440
 	{
 		humiVoltage = 440;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 0) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//0011>>460
+	else if ((readS1Pin3 == 0) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//0011>>460
 	{
 		humiVoltage = 460;
+		switchSetFlagV = 1;
 	}
-	if ((readS1Pin3 == 1) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//1011>>500
+	else if ((readS1Pin3 == 1) && (readS1Pin4 == 0) && (readS1Pin5 == 1) && (readS1Pin6 == 1))//1011>>500
 	{
 		humiVoltage = 500;
+		switchSetFlagV = 1;
+	}
+	else
+	{
+		switchSetFlagV = 0;
 	}
 
 	/***********************************  加湿电流选择  *************************************/
@@ -189,72 +192,95 @@ void dialSwitchInit() {
 		humiCurrentUpperLimit = getIFromP(1500);
 		autoDrainWaterTime = 2;
 		cleanDrainWaterTime = 3 * 60;
+		switchSetFlagI = 1;
 	}
 
-	if ((readS2Pin2 == 0) && (readS2Pin3 == 1) && (readS2Pin4 == 0) && (readS2Pin5 == 0))
+	else if ((readS2Pin2 == 0) && (readS2Pin3 == 1) && (readS2Pin4 == 0) && (readS2Pin5 == 0))
 	{
 		humiCurrentUpperLimit = getIFromP(2300);
 		autoDrainWaterTime = 2;
 		cleanDrainWaterTime = 3 * 60;
+		switchSetFlagI = 1;
 	}
 
-	if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 0) && (readS2Pin5 == 0))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 0) && (readS2Pin5 == 0))
 	{
 		humiCurrentUpperLimit = getIFromP(3000);
 		autoDrainWaterTime = 8;
 		cleanDrainWaterTime = 3 * 60;
+		switchSetFlagI = 1;
 	}
 
-	if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 1) && (readS2Pin5 == 0))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 1) && (readS2Pin5 == 0))
 	{
 		humiCurrentUpperLimit = getIFromP(6100);
 		autoDrainWaterTime = 8;
 		cleanDrainWaterTime = 3 * 60;
+		switchSetFlagI = 1;
 	}
 
-	if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 0))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 0))
 	{
 		humiCurrentUpperLimit = getIFromP(9800);
 		autoDrainWaterTime = 10;
 		cleanDrainWaterTime = 6 * 60;
+		switchSetFlagI = 1;
 	}
 
-	if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 0) && (readS2Pin5 == 1))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 0) && (readS2Pin5 == 1))
 	{
 		humiCurrentUpperLimit = getIFromP(11400);
 		autoDrainWaterTime = 10;
 		cleanDrainWaterTime = 6 * 60;
+		switchSetFlagI = 1;
 	}
 
-	if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 0) && (readS2Pin5 == 1))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 0) && (readS2Pin5 == 1))
 	{
 		humiCurrentUpperLimit = getIFromP(17500);
 		autoDrainWaterTime = 10;
 		cleanDrainWaterTime = 6 * 60;
+		switchSetFlagI = 1;
 	}
 
-	if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 1) && (readS2Pin5 == 1))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 1) && (readS2Pin5 == 1))
 	{
 		humiCurrentUpperLimit = getIFromP(24300);
 		autoDrainWaterTime = 15;
 		cleanDrainWaterTime = 10 * 60;
+		switchSetFlagI = 1;
 	}
 
-	if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 1))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 1))
 	{
 		humiCurrentUpperLimit = getIFromP(34200);
 		autoDrainWaterTime = 15;
 		cleanDrainWaterTime = 10 * 60;
+		switchSetFlagI = 1;
 	}
 
-	if ((readS2Pin2 == 0) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 1))
+	else if ((readS2Pin2 == 0) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 1))
 	{
 		humiCurrentUpperLimit = getIFromP(49400);
 		autoDrainWaterTime = 20;
 		cleanDrainWaterTime = 10 * 60;
+		switchSetFlagI = 1;
+	}
+	else
+	{
+		switchSetFlagI = 0;
 	}
 	
-	
+	//判断拨码开关是否初始化。未初始化：0；已初始化：1
+
+
+	if ((0 == switchSetFlagV) || (0 == switchSetFlagI))
+	{
+		switchSetFlag = 0;
+	}
+	else {
+		switchSetFlag = 1;
+	}
 
 /******************************************  额外排水时间  ****************************************/
 	if ((readS1Pin1 == 1) && (readS1Pin2 == 1))

@@ -96,21 +96,21 @@ void humiCtrl() {
 			stopInletCurrent = humiCurrentUpperLimit*humiOpening / 1000.0 * powerProportion / 1000.0 * 1.1;
 			//startDrainCurrent = humiCurrentUpperLimit* 1.2;
 
-			if (humiOpening < 50)
+			if (humiOpening < 50)						//当比例信号低于5%是记录标志位
 			{
 				proportionLessThan5Flag = 1;
 				proportionGreaterThan25Flag = 0;
 				allowRunFlagProportion = 0;
 			}
 
-			if (humiOpening > 250)
+			if (humiOpening > 250)						//当比例信号大于25%时记录标志位
 			{
 				proportionLessThan5Flag = 0;
 				proportionGreaterThan25Flag = 1;
 				allowRunFlagProportion = 1;
 			}
 
-			if ((humiOpening >= 50)&&(humiOpening <= 250))				//当处在比例模式时，比例信号小于25%，不开机
+			if ((humiOpening >= 50)&&(humiOpening <= 250))	//当比例信号处于5%和25%之间时，根据上面的标志位来判断开关
 			{
 				if (1 == proportionLessThan5Flag)
 				{
@@ -288,8 +288,6 @@ void humiCtrl() {
 
 			}
 		}
-
-
 
 		if (0 == allowRunFlagDrainWater)		//手动排水时，红绿，红绿交错闪烁
 		{
