@@ -197,7 +197,8 @@ void StartModbusMasterTask(void const * argument) {
 void StartCheckKeyPressedTask(void const * argument) {
 	for (;;)
 	{
-		osDelay(100);
+		osDelay(1);
+		keyScan();
 	}
 }
 

@@ -58,6 +58,10 @@ uint16_t startInletCurrent;			//开始进水电流
 uint16_t startDrainCurrent;			//开始排水电流
 uint16_t stopInletCurrent;			//停止进水电流
 
+const uint8_t KEY_TIME = 50;		//按键消抖延时时间
+uint8_t keyLock;					//按键触发后自锁的变量标志
+uint16_t keyTimeCount;				//按键去抖演示计数器
+uint8_t keyStatus;					//按键状态   按下：1；抬起：0
 
 static void osDelaySecond(int s);
 static void drainWater(int s);
@@ -285,6 +289,7 @@ void humiCtrl() {
 			ledSwitch(0, 0);
 		}
 
+		/*
 		if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
 		{
 			osDelay(50);
@@ -303,6 +308,23 @@ void humiCtrl() {
 				}
 			}
 		}
+		*/
+
+
+		if (1 == keyStatus)
+		{
+			keyStatus = 0;
+
+			if (1 == allowRunFlagDrainWater)
+			{
+				allowRunFlagDrainWater = 0;
+			}
+			else {
+				allowRunFlagDrainWater = 1;
+				humiCtrlInit();
+			}
+		}
+
 
 		if (0 == allowRunFlagDrainWater)		//手动排水时，红绿，红绿交错闪烁
 		{
@@ -359,6 +381,27 @@ void humiCtrl() {
 			break;
 		}
 	}
+}
+
+
+void keyScan() {
+
+	if (1 == HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15))		//IO 是高电平，说明按键没有被按下，这时要及时清零一些标志位
+	{
+		keyLock = 0;			//按键自锁标志清零
+		keyTimeCount = 0;		//按键去抖动延时计数器清零
+	}
+	else if(keyLock == 0)		//有按键按下，且是第一次被按下
+	{
+		keyTimeCount++;
+		if (keyTimeCount > KEY_TIME)
+		{
+			keyTimeCount = 0;
+			keyLock = 1;
+			keyStatus = 1;
+		}
+	}
+
 }
 
 
