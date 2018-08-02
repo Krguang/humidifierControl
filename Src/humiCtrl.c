@@ -84,17 +84,15 @@ void humiCtrl() {
 
 	inletFlag = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);	//读取进水阀状态
 
-	if (inletTimeCount > 30)			//进水时间计时，超过30分钟，判断为进水阀或出水阀损坏			
+	if (inletTimeCount > 30*60)			//进水时间计时，超过30分钟，判断为进水阀或出水阀损坏			
 	{
 		waterValveFailureFlag = 0;
 	}
 
-	/*
-	printf("inletFlag = %d \n", inletFlag);
-	printf("inletTimeCount = %d \n", inletTimeCount);
-	printf("waterValveFailureFlag = %d \n", waterValveFailureFlag);
-	*/
-
+	//printf("inletFlag = %d \n", inletFlag);
+	//printf("inletTimeCount = %d \n", inletTimeCount);
+	//printf("waterValveFailureFlag = %d \n", waterValveFailureFlag);
+	
 	if (1 == waterLevelWarning)			//高水位报警
 	{
 		inletValveClose;
@@ -289,10 +287,10 @@ void humiCtrl() {
 
 		if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
 		{
-			osDelay(20);
+			osDelay(50);
 			if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
 			{
-				osDelay(20);
+				osDelay(50);
 				while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0) {}
 
 				if (1 == allowRunFlagDrainWater)
@@ -303,7 +301,6 @@ void humiCtrl() {
 					allowRunFlagDrainWater = 1;
 					humiCtrlInit();
 				}
-
 			}
 		}
 

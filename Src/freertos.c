@@ -162,7 +162,7 @@ void StartHumiCtrlTask(void const * argument) {
 	for (;;)
 	{
 		humiCtrl();
-		osDelay(100);
+		osDelay(10);
 	}
 }
 

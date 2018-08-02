@@ -284,7 +284,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  nonstopWorkCount++;
 	  }
 
-	  if (1 == inletFlag)
+	  if (1 == inletFlag)					//进水阀开启计时
 	  {
 		  inletTimeCount++;
 		  if (inletTimeCount > 30000)
