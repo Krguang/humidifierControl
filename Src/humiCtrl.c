@@ -64,10 +64,17 @@ static void inletValveOpenWithLimit();
 static void manualDrainWaterScan(int s);
 
 
+
+/*
+		设置电流90%			设置电流110%			基准电流120%			基准电流140%
+---------------------------------------------------------------------------------------
+			|		排水			|					|					|
+	进水		|		进水			|		停止进水		|		排水			|		15s后停止工作
+			|		不动作		|					|					|
+
+*/
+
 void humiCtrl() {
-
-
-	
 
 	if (1 == waterLevelWarnning)
 	{
@@ -77,14 +84,14 @@ void humiCtrl() {
 	}
 	
 
-	if (1 == switchSetFlag)
+	if (1 == switchSetFlag)				//拨码开关正常初始化
 	{
 		if (humiMode == PROPORTIONMODE)
 		{
-			shutOffCurrentLowerLimit = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.3;
-			startInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 0.9;
-			stopInletCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.1;
-			startDrainCurrent = humiCurrentUpperLimit*humiOpening / 1000 * powerProportion / 1000 * 1.2;
+			shutOffCurrentLowerLimit = humiCurrentUpperLimit*humiOpening / 1000.0 * powerProportion / 1000.0 * 0.3;
+			startInletCurrent = humiCurrentUpperLimit*humiOpening / 1000.0 * powerProportion / 1000.0 * 0.9;
+			stopInletCurrent = humiCurrentUpperLimit*humiOpening / 1000.0 * powerProportion / 1000.0 * 1.1;
+			//startDrainCurrent = humiCurrentUpperLimit* 1.2;
 
 			if (humiOpening < 250)				//当处在比例模式时，比例信号小于25%，不开机
 			{
@@ -100,8 +107,19 @@ void humiCtrl() {
 			shutOffCurrentLowerLimit = humiCurrentUpperLimit * powerProportion / 1000 * 0.3;
 			startInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 0.9;
 			stopInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.1;
-			startDrainCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.2;
+			//startDrainCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.2;
 		}
+
+
+		printf("当前电流 = %d \n", humiCurrent);
+		printf("能量开度 = %d \n", powerProportion);
+		printf("比例开度 = %d \n", humiOpening);
+		printf("当前设定电流 = %d \n", humiCurrentUpperLimit);
+		printf("关闭低电流 = %d \n", shutOffCurrentLowerLimit);
+		printf("关闭高电流 = %d \n", shutOffCurrentTopLimit);
+		printf("开始进水电流 = %d \n", startInletCurrent);
+		printf("停止进水电流 = %d \n", stopInletCurrent);
+		printf("开始排水电流 = %d \n\n", startDrainCurrent);
 
 
 		//运行需满足四个条件：1.开关信号闭合。2.非排水状态。3.非报警。4.比例模式时，比例值大于25%
@@ -133,7 +151,7 @@ void humiCtrl() {
 					ledSwitch(0, 0);
 
 				}
-				else if (humiCurrent > startDrainCurrent)			//超过排水电流，排水
+				else if (humiCurrent >= startDrainCurrent)			//超过排水电流，排水
 				{
 					osDelaySecond(1);
 					if (humiCurrent > startDrainCurrent) {
@@ -144,32 +162,15 @@ void humiCtrl() {
 					ledSwitch(0, 0);
 				}
 
-				else if (humiCurrent < startInletCurrent)			//电流不足，进水
+				else if (humiCurrent >= stopInletCurrent)			//停止进水
 				{
-
-					drainValveClose;
-					inletValveOpenWithLimit();
-					contactorOpen;
-					if (humiCurrent <= shutOffCurrentLowerLimit)
-					{
-						startLowerLimitCountFlag = 1;
-						if (lowerLimitCount > 30)	//测试为30秒，实际为30*60秒
-						{
-							startLowerLimitCountFlag = 0;
-							lowerLimitCount = 0;
-							alarmFlag = 1;
-							humiSuspend();
-							ledBlink(1);
-							ledSwitch(0, 0);
-						}
-					}
-					ledBlink(1);
-					ledSwitch(0, 0);
+					inletValveClose;
 				}
+
 				else if ((humiCurrent >= startInletCurrent) && (humiCurrent <= startDrainCurrent))//电流在正常工作范围内
 				{
-					drainValveClose;
-					inletValveClose;
+					//drainValveClose;
+					//inletValveClose;
 					contactorOpen;
 					ledSwitch(1, 0);
 					ledSwitch(0, 1);
@@ -202,7 +203,29 @@ void humiCtrl() {
 
 				}
 
+				else if (humiCurrent < startInletCurrent)			//电流不足，进水
+				{
 
+					drainValveClose;
+					inletValveOpenWithLimit();
+					contactorOpen;
+					if (humiCurrent <= shutOffCurrentLowerLimit)
+					{
+						startLowerLimitCountFlag = 1;
+						if (lowerLimitCount > 30)	//低电流关机 测试为30秒，实际为30*60秒
+						{
+							startLowerLimitCountFlag = 0;
+							lowerLimitCount = 0;
+							alarmFlag = 1;
+							humiSuspend();
+							ledBlink(1);
+							ledSwitch(0, 0);
+						}
+					}
+					ledBlink(1);
+					ledSwitch(0, 0);
+				}
+				
 				nonstopWorkFlag = 1;
 			}
 			else
@@ -262,21 +285,6 @@ void humiCtrl() {
 				break;
 			}
 		}
-
-
-
-		//switch (ucKeySec) //按键服务状态切换
-		//{
-		//case 1:// 1 号键的短按
-		//	allowRunFlagDrainWater ^= 1;
-		//	ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
-		//	break;
-		//case 2:// 1 号键的长按
-		//	humiCtrlInit();
-		//	ucKeySec = 0; //响应按键服务处理程序后，按键编号清零，避免一致触发
-		//	break;
-		//}
-
 
 		manualDrainWaterScan(1800);	//实际值为30分钟，测试用10s。
 	}
@@ -341,8 +349,8 @@ void humiCtrlInit() {
 	allowRunFlagDrainWater = 1;
 	allowRunFlagProportion = 1;
 	signalRelayClose;
-	shutOffCurrentTopLimit = humiCurrentUpperLimit*1.414;
-
+	shutOffCurrentTopLimit = humiCurrentUpperLimit*1.4;
+	startDrainCurrent = humiCurrentUpperLimit * 1.2;
 }
 
 	
