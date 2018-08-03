@@ -222,11 +222,10 @@ void humiCtrl() {
 				{
 					osDelaySecond(1);
 					if (humiCurrent > startDrainCurrent) {
+						ledSwitch(1, 1);
+						ledSwitch(0, 0);
 						drainWater(autoDrainWaterTime);				//此处排水该为阻塞式，因为排水时接触器会断开，无电流，会误进入其他状态
 					}
-
-					ledSwitch(1, 1);
-					ledSwitch(0, 0);
 				}
 
 				else if (humiCurrent >= stopInletCurrent)			//停止进水
