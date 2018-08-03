@@ -42,7 +42,7 @@ uint16_t overCurrentCount;			//超电流计数
 uint8_t blinkFlag;					//led闪烁标志
 uint8_t alarmFlag;					//报警标志
 
-uint8_t waterValveFailureFlag;	//水阀故障标记	无故障:1;有故障:1
+uint8_t waterValveFailureFlag;		//水阀故障标记	无故障:1;有故障:1
 uint8_t inletFlag;					//进水标志		进水开：1；进水关：0
 uint16_t inletTimeCount;			//进水时间计数
 
@@ -62,6 +62,14 @@ const uint8_t KEY_TIME = 50;		//按键消抖延时时间
 uint8_t keyLock;					//按键触发后自锁的变量标志
 uint16_t keyTimeCount;				//按键去抖演示计数器
 uint8_t keyStatus;					//按键状态   按下：1；抬起：0
+
+
+const uint8_t WATER_LEVEL_OFF_COUNT_CONST = 15;	//高水位报警断开每秒计数设定值
+const uint8_t WATER_LEVEL_ON_COUNT_CONST = 5;	//高水位报警生效每秒计数设定值
+uint16_t waterLevelOffCount;					//高水位报警断开每秒计数
+uint16_t waterLevelOnCount;						//高水位报警生效每秒计数
+uint8_t waterLevelFlag;							//高水位报警标志
+uint8_t waterLevelWarningEffect;				//高水位报警确认生效
 
 static void osDelaySecond(int s);
 static void drainWater(int s);
@@ -92,18 +100,37 @@ void humiCtrl() {
 	{
 		waterValveFailureFlag = 0;
 	}
-
-	//printf("inletFlag = %d \n", inletFlag);
-	//printf("inletTimeCount = %d \n", inletTimeCount);
-	//printf("waterValveFailureFlag = %d \n", waterValveFailureFlag);
-	
+	/*
+	printf("inletFlag = %d \n", inletFlag);
+	printf("inletTimeCount = %d \n", inletTimeCount);
+	printf("waterValveFailureFlag = %d \n", waterValveFailureFlag);
+	*/
 	if (1 == waterLevelWarning)			//高水位报警
 	{
+		//inletValveClose;
+		//ledSwitch(1, 1);
+		//ledSwitch(0, 1);
+		waterLevelFlag = 1;
+	}
+	else
+	{
+		waterLevelFlag = 0;
+	}
+
+	if (waterLevelOnCount >= WATER_LEVEL_ON_COUNT_CONST)
+	{
+		waterLevelWarningEffect = 1;
 		inletValveClose;
-		ledSwitch(1, 1);
+		//ledSwitch(1, 1);
+		ledBlink(1);
 		ledSwitch(0, 1);
 	}
 	
+	if (waterLevelOffCount >= WATER_LEVEL_OFF_COUNT_CONST)
+	{
+		waterLevelWarningEffect = 0;
+	}
+
 	if (1 == switchSetFlag)				//拨码开关正常初始化
 	{
 		if (humiMode == PROPORTIONMODE)
@@ -145,8 +172,8 @@ void humiCtrl() {
 			startInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 0.9;
 			stopInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.1;
 		}
-/*
 
+		/*
 		printf("当前电流 = %d \n", humiCurrent);
 		printf("能量开度 = %d \n", powerProportion);
 		printf("比例开度 = %d \n", humiOpening);
@@ -156,7 +183,12 @@ void humiCtrl() {
 		printf("开始进水电流 = %d \n", startInletCurrent);
 		printf("停止进水电流 = %d \n", stopInletCurrent);
 		printf("开始排水电流 = %d \n\n", startDrainCurrent);
-*/
+
+		printf("allowRunFlagDrainWater = %d \n\n", allowRunFlagDrainWater);
+		printf("alarmFlag = %d \n\n", alarmFlag);
+		printf("allowRunFlagProportion = %d \n\n", allowRunFlagProportion);
+		printf("waterValveFailureFlag = %d \n\n", waterValveFailureFlag);
+		*/
 
 		//运行需满足四个条件：1.开关信号闭合。2.非排水状态。3.非报警。4.比例模式时，比例值大于25%
 		if ((1 == allowRunFlagDrainWater) && (0 == alarmFlag) && (1 == allowRunFlagProportion)&&(1 == waterValveFailureFlag))
@@ -173,7 +205,6 @@ void humiCtrl() {
 					{
 						overCurrentFlag = 0;
 						overCurrentCount = 0;
-						//osDelaySecond(15);
 						if (humiCurrent >= shutOffCurrentTopLimit)
 						{
 							humiSuspend();
@@ -236,7 +267,6 @@ void humiCtrl() {
 							signalRelayOpen;
 						}
 					}
-
 				}
 
 				else if (humiCurrent < startInletCurrent)			//电流不足，进水
@@ -248,7 +278,7 @@ void humiCtrl() {
 					if (humiCurrent <= shutOffCurrentLowerLimit)
 					{
 						startLowerLimitCountFlag = 1;
-						if (lowerLimitCount > 30)	//低电流关机 测试为30秒，实际为30*60秒
+						if (lowerLimitCount > 30*60)	//低电流关机 测试为30秒，实际为30*60秒
 						{
 							startLowerLimitCountFlag = 0;
 							lowerLimitCount = 0;
@@ -257,9 +287,13 @@ void humiCtrl() {
 							ledBlink(1);
 							ledSwitch(0, 0);
 						}
+
 					}
-					ledBlink(1);
-					ledSwitch(0, 0);
+					else {
+						//ledBlink(1);
+						ledSwitch(0, 1);
+					}
+		
 				}
 				
 				nonstopWorkFlag = 1;
@@ -384,6 +418,7 @@ void humiCtrl() {
 }
 
 
+//按键扫描函数
 void keyScan() {
 
 	if (1 == HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15))		//IO 是高电平，说明按键没有被按下，这时要及时清零一些标志位
@@ -401,13 +436,12 @@ void keyScan() {
 			keyStatus = 1;
 		}
 	}
-
 }
 
 
 static void inletValveOpenWithLimit() {
 
-	if (0 == waterLevelWarning)
+	if (0 == waterLevelWarningEffect)
 	{
 		inletValveOpen;
 	}
@@ -424,6 +458,10 @@ static void osDelaySecond(int s) {
 //加湿数据初始化
 void humiCtrlInit() {
 
+	contactorClose;
+	drainValveClose;
+	inletValveClose;
+	signalRelayClose;
 	extraDrainWaterFlag = 0;
 	startLowerLimitCountFlag = 0;
 	lowerLimitCount = 0;
@@ -431,7 +469,6 @@ void humiCtrlInit() {
 	allowRunFlagDrainWater = 1;
 	allowRunFlagProportion = 1;
 	waterValveFailureFlag = 1;
-	signalRelayClose;
 	shutOffCurrentTopLimit = humiCurrentUpperLimit*1.4;
 	startDrainCurrent = humiCurrentUpperLimit * 1.2;
 }

@@ -296,6 +296,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  inletTimeCount = 0;
 	  }
 
+	  if (1 == waterLevelFlag)
+	  {
+		  waterLevelOnCount++;
+		  waterLevelOffCount = 0;
+		  if (waterLevelOnCount > 30000)
+		  {
+			  waterLevelOnCount = 30000;
+		  }
+	  }
+	  else {
+		  waterLevelOffCount++;
+		  waterLevelOnCount = 0;
+		  if (waterLevelOffCount > 30000)
+		  {
+			  waterLevelOffCount = 30000;
+		  }
+	  }
 
   }
   /* USER CODE END Callback 1 */

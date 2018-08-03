@@ -2,7 +2,9 @@
 #include "stm32f1xx_hal.h"
 #include "main.h"
 
-
+extern uint16_t waterLevelOffCount;		//高水位报警断开每秒计数
+extern uint16_t waterLevelOnCount;		//高水位报警生效每秒计数
+extern uint8_t waterLevelFlag;			//高水位报警标志
 extern uint8_t inletFlag;				//进水标志		进水开：1；进水关：0
 extern uint16_t inletTimeCount;			//进水时间计数
 extern uint8_t nonstopWorkFlag;			//连续工作标志
