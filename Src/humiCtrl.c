@@ -680,6 +680,7 @@ static void humiSuspend() {
 	contactorClose;
 	inletValveClose;
 	drainValveClose;
-	greenLedDark();
+	//greenLedDark();
+	ledSwitch(0, 0);
 	ledSwitch(1, 0);
 }
