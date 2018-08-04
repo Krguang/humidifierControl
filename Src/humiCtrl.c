@@ -46,6 +46,7 @@ uint8_t waterValveFailureFlag;		//水阀故障标记	无故障:1;有故障:1
 uint8_t inletFlag;					//进水标志		进水开：1；进水关：0
 uint16_t inletTimeCount;			//进水时间计数
 
+uint8_t allowRunFlagWashBucket;		//允许运行信号，洗桶相关
 uint8_t allowRunFlagDrainWater;		//允许运行信号，排水相关
 uint8_t allowRunFlagProportion;		//允许运行信号，比例相关
 uint8_t proportionLessThan5Flag;	//比例信号小于5%标志
@@ -71,6 +72,16 @@ uint16_t waterLevelOnCount;						//高水位报警生效每秒计数
 uint8_t waterLevelFlag;							//高水位报警标志
 uint8_t waterLevelWarningEffect;				//高水位报警确认生效
 
+const uint32_t NEED_WASH_BUCKET_COUNT_CONST = 259200;//洗桶计数上限 72*60*60 72小时
+uint8_t needWashBucketFlag;							//需要洗桶判断标志位
+uint8_t startDrainWaterWashBucketFlag;				//洗桶开始排水标志位
+uint8_t stopDrainWaterWashBucketFlag;				//洗桶停止排水标志位
+uint32_t needWashBucketCount;						//需要洗桶判断洗桶每秒计数
+uint16_t startDrainWaterWashBucketCount;			//洗桶开始排水计数
+uint16_t stopDrainWaterWashBucketCount;				//洗桶停止排水计数
+
+uint8_t washBucketStage;							//洗桶所处在的阶段
+
 static void osDelaySecond(int s);
 static void drainWater(int s);
 static void cleanBucket();
@@ -94,12 +105,27 @@ static void manualDrainWaterScan(int s);
 
 void humiCtrl() {
 
-	inletFlag = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);	//读取进水阀状态
+	inletFlag = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);		//读取进水阀状态
+	//needWashBucketFlag = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_6);	//直接读取接触器的状态会导致洗桶的时候打开接触器后误入正常模式，改为直接判断
+
 
 	if (inletTimeCount > 30*60)			//进水时间计时，超过30分钟，判断为进水阀或出水阀损坏			
 	{
 		waterValveFailureFlag = 0;
 	}
+
+//	if (needWashBucketCount > NEED_WASH_BUCKET_COUNT_CONST)	//接触器持续断开时间大于72小时
+	if (needWashBucketCount > 30)	//接触器持续断开时间大于72小时
+	{
+		allowRunFlagWashBucket = 0;
+	}
+	else
+	{
+		allowRunFlagWashBucket = 1;
+	}
+	//printf("needWashBucketFlag = %d \n", needWashBucketFlag);
+	//printf("needWashBucketCount = %d \n", needWashBucketCount);
+	//printf("allowRunFlagWashBucket = %d \n", allowRunFlagWashBucket);
 	/*
 	printf("inletFlag = %d \n", inletFlag);
 	printf("inletTimeCount = %d \n", inletTimeCount);
@@ -191,7 +217,7 @@ void humiCtrl() {
 		*/
 
 		//运行需满足四个条件：1.开关信号闭合。2.非排水状态。3.非报警。4.比例模式时，比例值大于25%
-		if ((1 == allowRunFlagDrainWater) && (0 == alarmFlag) && (1 == allowRunFlagProportion)&&(1 == waterValveFailureFlag))
+		if ((1 == allowRunFlagDrainWater) && (0 == alarmFlag) && (1 == allowRunFlagProportion)&&(1 == waterValveFailureFlag)&&(1 == allowRunFlagWashBucket))
 		{
 
 			if (1 == switchSignal)
@@ -238,6 +264,7 @@ void humiCtrl() {
 					//drainValveClose;
 					//inletValveClose;
 					contactorOpen;
+					needWashBucketFlag = 1;
 					ledSwitch(1, 0);
 					ledSwitch(0, 1);
 					extraDrainWaterFlag = 1;							//开始额外排水计时
@@ -249,11 +276,13 @@ void humiCtrl() {
 						if (extraDrainWaterTime > 0)
 						{
 							contactorClose;
+							needWashBucketFlag = 0;
 							inletValveClose;
 							drainValveOpen;
 							osDelaySecond(extraDrainWaterTime);
 							drainValveClose;
 							contactorOpen;
+							needWashBucketFlag = 1;
 						}
 					}
 
@@ -274,6 +303,7 @@ void humiCtrl() {
 					drainValveClose;
 					inletValveOpenWithLimit();
 					contactorOpen;
+					needWashBucketFlag = 1;
 					if (humiCurrent <= shutOffCurrentLowerLimit)
 					{
 						startLowerLimitCountFlag = 1;
@@ -310,6 +340,64 @@ void humiCtrl() {
 			signalRelayOpen;
 			nonstopWorkFlag = 0;
 		}
+
+		else if (0 == allowRunFlagWashBucket)	//需要洗桶
+		{
+
+			if (1 == washBucketStage)
+			{
+				startDrainWaterWashBucketFlag = 1;
+				if (startDrainWaterWashBucketCount < 30)
+				{
+					printf("进入同时进排水阶段 \n");
+					inletValveOpenWithLimit();
+					drainValveOpen;
+				}
+				else						//超过30秒，关闭排水阀
+				{
+					printf("进入关闭排水阀阶段 \n");
+					drainValveClose;
+					contactorOpen;
+
+					if ((humiCurrent > humiCurrentUpperLimit*0.9) || (1 == waterLevelWarningEffect))	//当加湿电流达到90%，或者高水位报警
+					{
+						stopDrainWaterWashBucketFlag = 1;		//进入下一个阶段，销毁上一个阶段的标志位
+						startDrainWaterWashBucketFlag = 0;
+						startDrainWaterWashBucketCount = 0;
+						washBucketStage = 2;
+					}
+				}
+			}
+			else if(2 == washBucketStage)
+			{
+				if (1 == stopDrainWaterWashBucketFlag)
+				{
+					printf("进入5分钟排水阶段 \n");
+
+					if (stopDrainWaterWashBucketCount < 30)	//不到5分钟
+					{
+						contactorClose;							//关闭接触器，打开排水阀，关闭进水阀
+						needWashBucketFlag = 0;
+						drainValveOpen;
+						inletValveClose;
+					}
+					else
+					{
+						printf("进入最后阶段 \n");
+						drainValveClose;						//5分钟后关闭排水阀,进水阀
+						inletValveClose;
+						stopDrainWaterWashBucketFlag = 0;
+						startDrainWaterWashBucketFlag = 0;		//复位用到的状态位和计数器
+						allowRunFlagWashBucket = 1;
+						stopDrainWaterWashBucketCount = 0;
+						startDrainWaterWashBucketCount = 0;
+						needWashBucketCount = 0;
+						washBucketStage = 1;
+					}
+				}
+			}
+		}
+
 		else if (0 == allowRunFlagProportion)	//外部比例信号过低，停止加湿
 		{
 			humiSuspend();
@@ -321,28 +409,7 @@ void humiCtrl() {
 			ledBlink(1);
 			ledSwitch(0, 0);
 		}
-
-		/*
-		if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
-		{
-			osDelay(50);
-			if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0)
-			{
-				osDelay(50);
-				while (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0) {}
-
-				if (1 == allowRunFlagDrainWater)
-				{
-					allowRunFlagDrainWater = 0;
-				}
-				else {
-					allowRunFlagDrainWater = 1;
-					humiCtrlInit();
-				}
-			}
-		}
-		*/
-
+		
 
 		if (1 == keyStatus)
 		{
@@ -461,15 +528,30 @@ void humiCtrlInit() {
 	drainValveClose;
 	inletValveClose;
 	signalRelayClose;
+
+	needWashBucketFlag = 0;
 	extraDrainWaterFlag = 0;
 	startLowerLimitCountFlag = 0;
-	lowerLimitCount = 0;
+	stopDrainWaterWashBucketFlag = 0;
+	startDrainWaterWashBucketFlag = 0;
 	alarmFlag = 0;
+	allowRunFlagWashBucket = 1;
 	allowRunFlagDrainWater = 1;
 	allowRunFlagProportion = 1;
 	waterValveFailureFlag = 1;
+	
+	lowerLimitCount = 0;
+	overCurrentCount = 0;
+	drainWaterCount = 0;
+	manualDrainWaterCount = 0;
+	extraDrainWaterCount = 0;
+	stopDrainWaterWashBucketCount = 0;
+	startDrainWaterWashBucketCount = 0;
+
 	shutOffCurrentTopLimit = humiCurrentUpperLimit*1.4;
 	startDrainCurrent = humiCurrentUpperLimit * 1.2;
+
+	washBucketStage = 1;								//洗桶所处在的阶段
 }
 
 	
@@ -480,6 +562,7 @@ static void manualDrainWaterScan(int s) {
 	if (0 == allowRunFlagDrainWater)
 	{
 		contactorClose;
+		needWashBucketFlag = 0;
 		inletValveClose;
 		drainValveOpen;
 		manualDrainWaterFlag = 1;
@@ -491,6 +574,7 @@ static void manualDrainWaterScan(int s) {
 		manualDrainWaterCount = 0;
 		drainValveClose;
 		contactorOpen;
+		needWashBucketFlag = 1;
 		allowRunFlagDrainWater = 1;
 	}
 }
@@ -499,11 +583,13 @@ static void manualDrainWaterScan(int s) {
 //排水 S 秒
 static void drainWater(int s) {
 	contactorClose;
+	needWashBucketFlag = 0;
 	inletValveClose;
 	drainValveOpen;
 	osDelaySecond(s);
 	drainValveClose;
 	contactorOpen;
+	needWashBucketFlag = 1;
 }
 
 //洗桶
@@ -514,6 +600,7 @@ static void cleanBucket() {
 		drainValveClose;
 		inletValveOpen;
 		contactorOpen;
+		needWashBucketFlag = 1;
 	}
 	drainWater(cleanDrainWaterTime);
 }
@@ -592,6 +679,7 @@ static void greenLedDark() {
 static void humiSuspend() {
 
 	contactorClose;
+	needWashBucketFlag = 0;
 	inletValveClose;
 	drainValveClose;
 	greenLedDark();

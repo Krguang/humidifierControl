@@ -296,7 +296,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  inletTimeCount = 0;
 	  }
 
-	  if (1 == waterLevelFlag)
+	  if (1 == waterLevelFlag)				//高水位报警计时
 	  {
 		  waterLevelOnCount++;
 		  waterLevelOffCount = 0;
@@ -306,11 +306,37 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		  }
 	  }
 	  else {
-		  waterLevelOffCount++;
+		  waterLevelOffCount++;				//水位下降计时
 		  waterLevelOnCount = 0;
 		  if (waterLevelOffCount > 30000)
 		  {
 			  waterLevelOffCount = 30000;
+		  }
+	  }
+
+	  if (0 == needWashBucketFlag)				//当接触器断开开始计数，吸合归零
+	  {
+		  needWashBucketCount++;
+	  }
+	  else {
+		  needWashBucketCount = 0;
+	  }
+
+	  if (1 == startDrainWaterWashBucketFlag)
+	  {
+		  startDrainWaterWashBucketCount++;
+		  if (startDrainWaterWashBucketCount > 30000)
+		  {
+			  startDrainWaterWashBucketCount = 30000;
+		  }
+	  }
+
+	  if (1 == stopDrainWaterWashBucketFlag)
+	  {
+		  stopDrainWaterWashBucketCount++;
+		  if (stopDrainWaterWashBucketCount > 30000)
+		  {
+			  stopDrainWaterWashBucketCount = 30000;
 		  }
 	  }
 
