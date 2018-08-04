@@ -18,6 +18,17 @@
 #define waterLevelWarning	HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4)						//高水位报警
 #define switchSignal		HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_15)						//开关信号
 
+
+const uint8_t KEY_TIME = 50;							//按键消抖延时时间
+const uint8_t WATER_LEVEL_OFF_COUNT_CONST = 15;			//高水位报警断开每秒计数设定值
+const uint8_t WATER_LEVEL_ON_COUNT_CONST = 5;			//高水位报警生效每秒计数设定值
+const uint32_t NEED_WASH_BUCKET_COUNT_CONST = 30;		//洗桶计数上限72*60*60 72小时 = 259200    测试值：30秒
+const uint16_t CONTINUE_INLET_WATER = 1800;				//进水时间计时，超过30分钟，判断为进水阀或出水阀损坏	
+const uint16_t EXTRA_DRAIN_WATER_TIME = 1200;			//额外排水时间
+const uint16_t MAUNAL_DRAIN_WATER_BACK_TIME = 1800;		//手动排水后的自动关闭时间
+
+
+
 uint8_t nonstopWorkFlag;			//连续工作标志
 uint32_t nonstopWorkCount;			//连续工作计数
 
@@ -59,20 +70,19 @@ uint16_t startInletCurrent;			//开始进水电流
 uint16_t startDrainCurrent;			//开始排水电流
 uint16_t stopInletCurrent;			//停止进水电流
 
-const uint8_t KEY_TIME = 50;		//按键消抖延时时间
+
 uint8_t keyLock;					//按键触发后自锁的变量标志
 uint16_t keyTimeCount;				//按键去抖演示计数器
 uint8_t keyStatus;					//按键状态   按下：1；抬起：0
 
 
-const uint8_t WATER_LEVEL_OFF_COUNT_CONST = 15;	//高水位报警断开每秒计数设定值
-const uint8_t WATER_LEVEL_ON_COUNT_CONST = 5;	//高水位报警生效每秒计数设定值
+
 uint16_t waterLevelOffCount;					//高水位报警断开每秒计数
 uint16_t waterLevelOnCount;						//高水位报警生效每秒计数
 uint8_t waterLevelFlag;							//高水位报警标志
 uint8_t waterLevelWarningEffect;				//高水位报警确认生效
 
-const uint32_t NEED_WASH_BUCKET_COUNT_CONST = 259200;//洗桶计数上限 72*60*60 72小时
+
 uint8_t needWashBucketFlag;							//需要洗桶判断标志位
 uint8_t startDrainWaterWashBucketFlag;				//洗桶开始排水标志位
 uint8_t stopDrainWaterWashBucketFlag;				//洗桶停止排水标志位
@@ -106,10 +116,8 @@ static void manualDrainWaterScan(int s);
 void humiCtrl() {
 
 	inletFlag = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);		//读取进水阀状态
-	//needWashBucketFlag = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_6);	//直接读取接触器的状态会导致洗桶的时候打开接触器后误入正常模式，改为直接判断
-
-
-	if (inletTimeCount > 30*60)			//进水时间计时，超过30分钟，判断为进水阀或出水阀损坏			
+	
+	if (inletTimeCount > CONTINUE_INLET_WATER)			//进水时间计时，超过30分钟，判断为进水阀或出水阀损坏			
 	{
 		waterValveFailureFlag = 0;
 	}
@@ -124,9 +132,6 @@ void humiCtrl() {
 	*/
 	if (1 == waterLevelWarning)			//高水位报警
 	{
-		//inletValveClose;
-		//ledSwitch(1, 1);
-		//ledSwitch(0, 1);
 		waterLevelFlag = 1;
 	}
 	else
@@ -134,16 +139,15 @@ void humiCtrl() {
 		waterLevelFlag = 0;
 	}
 
-	if (waterLevelOnCount >= WATER_LEVEL_ON_COUNT_CONST)
+	if (waterLevelOnCount >= WATER_LEVEL_ON_COUNT_CONST)		//高水位报警5秒消抖
 	{
 		waterLevelWarningEffect = 1;
 		inletValveClose;
-		//ledSwitch(1, 1);
 		ledBlink(1);
 		ledSwitch(0, 1);
 	}
 	
-	if (waterLevelOffCount >= WATER_LEVEL_OFF_COUNT_CONST)
+	if (waterLevelOffCount >= WATER_LEVEL_OFF_COUNT_CONST)		//高水位恢复正常15秒消抖
 	{
 		waterLevelWarningEffect = 0;
 	}
@@ -161,7 +165,7 @@ void humiCtrl() {
 				proportionLessThan5Flag = 1;
 				proportionGreaterThan25Flag = 0;
 				allowRunFlagProportion = 0;
-				needWashBucketFlag = 0;
+				needWashBucketFlag = 0;					//停机洗桶计数标志
 			}
 
 			if (humiOpening > 250)						//当比例信号大于25%时记录标志位
@@ -193,14 +197,13 @@ void humiCtrl() {
 			stopInletCurrent = humiCurrentUpperLimit * powerProportion / 1000 * 1.1;
 		}
 
-		//	if (needWashBucketCount > NEED_WASH_BUCKET_COUNT_CONST)			//接触器持续断开时间大于72小时
-		if ((needWashBucketCount > 30) && (1 == allowRunFlagProportion))	//接触器持续断开时间大于72小时且机器开启时
+		if ((needWashBucketCount > NEED_WASH_BUCKET_COUNT_CONST)&&(1 == allowRunFlagProportion))			//接触器持续断开时间大于72小时
 		{
 			allowRunFlagWashBucket = 0;
 		}
 	
 
-		/*
+		
 		printf("当前电流 = %d \n", humiCurrent);
 		printf("能量开度 = %d \n", powerProportion);
 		printf("比例开度 = %d \n", humiOpening);
@@ -211,11 +214,11 @@ void humiCtrl() {
 		printf("停止进水电流 = %d \n", stopInletCurrent);
 		printf("开始排水电流 = %d \n\n", startDrainCurrent);
 
-		printf("allowRunFlagDrainWater = %d \n\n", allowRunFlagDrainWater);
-		printf("alarmFlag = %d \n\n", alarmFlag);
-		printf("allowRunFlagProportion = %d \n\n", allowRunFlagProportion);
-		printf("waterValveFailureFlag = %d \n\n", waterValveFailureFlag);
-		*/
+	//	printf("allowRunFlagDrainWater = %d \n\n", allowRunFlagDrainWater);
+	//	printf("alarmFlag = %d \n\n", alarmFlag);
+	//	printf("allowRunFlagProportion = %d \n\n", allowRunFlagProportion);
+	//	printf("waterValveFailureFlag = %d \n\n", waterValveFailureFlag);
+		
 
 		//运行需满足四个条件：1.开关信号闭合。2.非排水状态。3.非报警。4.比例模式时，比例值大于25%
 		if ((1 == allowRunFlagDrainWater) && (0 == alarmFlag) && (1 == allowRunFlagProportion)&&(1 == waterValveFailureFlag)&&(1 == allowRunFlagWashBucket))
@@ -267,8 +270,8 @@ void humiCtrl() {
 					contactorOpen;
 					ledSwitch(1, 0);
 					ledSwitch(0, 1);
-					extraDrainWaterFlag = 1;							//开始额外排水计时
-					if (extraDrainWaterCount > 20 * 60)					//正常运行20分钟后开始自动排水
+					extraDrainWaterFlag = 1;								//开始额外排水计时
+					if (extraDrainWaterCount > EXTRA_DRAIN_WATER_TIME)		//正常运行20分钟后开始自动排水
 					{
 						extraDrainWaterCount = 0;
 						extraDrainWaterFlag = 0;
@@ -317,6 +320,7 @@ void humiCtrl() {
 					}
 					else {
 						//ledBlink(1);
+						ledSwitch(1, 0);
 						ledSwitch(0, 1);
 					}
 		
@@ -388,7 +392,7 @@ void humiCtrl() {
 						stopDrainWaterWashBucketCount = 0;
 						startDrainWaterWashBucketCount = 0;
 						needWashBucketCount = 0;
-						washBucketStage = 1;
+						washBucketStage = 1;					//洗桶完毕，返回第一阶段
 					}
 				}
 			}
@@ -447,7 +451,7 @@ void humiCtrl() {
 			}
 		}
 
-		manualDrainWaterScan(1800);	//手动排水的扫描函数。实际值为30分钟，测试用10s。
+		manualDrainWaterScan(MAUNAL_DRAIN_WATER_BACK_TIME);	//手动排水的扫描函数。
 	}
 	else
 	{
