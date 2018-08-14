@@ -132,6 +132,7 @@ void StartInittTask(void const * argument)
 
 	dialSwitchInit();
 	humiCtrlInit();
+	fristWashBucket();
 	
 	osThreadDef(dataProCessingTask, StartDataProCessingTask, osPriorityNormal, 0, 128);
 	dataProcessingTaskHandle = osThreadCreate(osThread(dataProCessingTask), NULL);

@@ -32,3 +32,4 @@ extern uint16_t lowerLimitCount;
 void humiCtrlInit();
 void humiCtrl();
 void keyScan();
+void fristWashBucket();
