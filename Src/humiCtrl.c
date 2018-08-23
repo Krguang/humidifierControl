@@ -86,7 +86,9 @@ uint16_t startDrainWaterWashBucketCount;			//洗桶开始排水计数
 uint16_t stopDrainWaterWashBucketCount;				//洗桶停止排水计数
 
 uint8_t washBucketStage;							//洗桶所处在的阶段
-uint8_t nostopWorkTake;
+uint8_t nostopWorkTake;							
+uint8_t beyond120Count;
+
 
 static void osDelaySecond(int s);
 static void drainWater(int s);
@@ -250,6 +252,27 @@ void humiCtrl() {
 						ledSwitch(0, 1);
 						ledSwitch(1, 0);
 						drainWater(autoDrainWaterTime);				//此处排水该为阻塞式，因为排水时接触器会断开，无电流，会误进入其他状态
+						beyond120Count++;
+						if (beyond120Count >= 5 )					//基准电流超过120%，自动排水五次，触发高电流报警
+						{
+							beyond120Count = 0;
+							overCurrentFlag = 1;
+							if (overCurrentCount > 15)
+							{
+								overCurrentFlag = 0;
+								overCurrentCount = 0;
+								if (humiCurrent >= shutOffCurrentTopLimit)
+								{
+									humiSuspend();
+									alarmFlag = 1;
+									ledSwitch(1, 1);
+									ledSwitch(0, 0);
+								}
+							}
+
+							ledSwitch(1, 1);
+							ledSwitch(0, 0);
+						}
 					}
 				}
 
@@ -448,7 +471,6 @@ void humiCtrl() {
 
 			ledSwitch(1, 0);
 			ledSwitch(0, 1);				//洗桶的时候亮绿灯
-
 		}
 
 		else if (0 == allowRunFlagProportion)	//外部比例信号过低，停止加湿
