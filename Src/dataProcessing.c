@@ -26,9 +26,9 @@ uint16_t humiCurrentUpperLimit;
 uint16_t humiVoltage = 380;
 uint16_t powerProportion;
 
-uint16_t extraDrainWaterTime;
-uint16_t autoDrainWaterTime;
-uint16_t cleanDrainWaterTime;
+uint16_t extraDrainWaterTime;		//额外排水时间
+uint16_t autoDrainWaterTime;		//自动排水时间
+uint16_t cleanDrainWaterTime;		//洗桶时间
 
 uint16_t ctrlToDisplayTemp[255];
 uint16_t ctrlToPLCTemp[255];
@@ -36,10 +36,8 @@ uint16_t ctrlToPLCTemp[255];
 volatile uint16_t ADC_ConvertedValue[3];
 uint32_t ADC_Average[3];
 
-
 static void adcProcesdsing() {
 
-	
 	uint32_t a=0, b=0, c=0;
 
 	for (uint8_t i = 0; i < 100; i++)
@@ -184,83 +182,83 @@ void dialSwitchInit() {
 	/*
 	*	humiCurrentUpperLimit为实际额定电流*10，方便后面数据处理
 	*/
-	if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 0) && (readS2Pin5 == 0))
+	if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 0) && (readS2Pin5 == 0))			//2公斤
 	{
 		humiCurrentUpperLimit = getIFromP(1500);
 		autoDrainWaterTime = 2;
-		cleanDrainWaterTime = 3 * 60;
+		cleanDrainWaterTime = 90;
 		switchSetFlagI = 1;
 	}
 
-	else if ((readS2Pin2 == 0) && (readS2Pin3 == 1) && (readS2Pin4 == 0) && (readS2Pin5 == 0))
+	else if ((readS2Pin2 == 0) && (readS2Pin3 == 1) && (readS2Pin4 == 0) && (readS2Pin5 == 0))		//3公斤
 	{
 		humiCurrentUpperLimit = getIFromP(2300);
 		autoDrainWaterTime = 2;
-		cleanDrainWaterTime = 3 * 60;
+		cleanDrainWaterTime = 90;
 		switchSetFlagI = 1;
 	}
 
-	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 0) && (readS2Pin5 == 0))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 0) && (readS2Pin5 == 0))		//4公斤
 	{
 		humiCurrentUpperLimit = getIFromP(3000);
 		autoDrainWaterTime = 8;
-		cleanDrainWaterTime = 3 * 60;
+		cleanDrainWaterTime = 90;
 		switchSetFlagI = 1;
 	}
 
-	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 1) && (readS2Pin5 == 0))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 1) && (readS2Pin5 == 0))		//8公斤
 	{
 		humiCurrentUpperLimit = getIFromP(6100);
 		autoDrainWaterTime = 8;
-		cleanDrainWaterTime = 3 * 60;
+		cleanDrainWaterTime = 120;
 		switchSetFlagI = 1;
 	}
 
-	else if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 0))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 0))		//13公斤
 	{
 		humiCurrentUpperLimit = getIFromP(9800);
 		autoDrainWaterTime = 10;
-		cleanDrainWaterTime = 6 * 60;
+		cleanDrainWaterTime = 180;
 		switchSetFlagI = 1;
 	}
 
-	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 0) && (readS2Pin5 == 1))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 0) && (readS2Pin5 == 1))		//15公斤
 	{
 		humiCurrentUpperLimit = getIFromP(11400);
 		autoDrainWaterTime = 10;
-		cleanDrainWaterTime = 6 * 60;
+		cleanDrainWaterTime = 180;
 		switchSetFlagI = 1;
 	}
 
-	else if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 0) && (readS2Pin5 == 1))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 0) && (readS2Pin5 == 1))		//23公斤
 	{
 		humiCurrentUpperLimit = getIFromP(17500);
 		autoDrainWaterTime = 10;
-		cleanDrainWaterTime = 6 * 60;
+		cleanDrainWaterTime = 180;
 		switchSetFlagI = 1;
 	}
 
-	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 1) && (readS2Pin5 == 1))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 0) && (readS2Pin4 == 1) && (readS2Pin5 == 1))		//32公斤
 	{
 		humiCurrentUpperLimit = getIFromP(24300);
 		autoDrainWaterTime = 15;
-		cleanDrainWaterTime = 10 * 60;
+		cleanDrainWaterTime = 300;
 		switchSetFlagI = 1;
 	}
 
-	else if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 1))
+	else if ((readS2Pin2 == 1) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 1))		//45公斤
 	{
 		humiCurrentUpperLimit = getIFromP(34200);
 		autoDrainWaterTime = 15;
-		cleanDrainWaterTime = 10 * 60;
+		cleanDrainWaterTime = 300;
 		switchSetFlagI = 1;
 	}
 
-	else if ((readS2Pin2 == 0) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 1))
+	else if ((readS2Pin2 == 0) && (readS2Pin3 == 1) && (readS2Pin4 == 1) && (readS2Pin5 == 1))		//65公斤
 	{
 		humiCurrentUpperLimit = getIFromP(49400);
 		autoDrainWaterTime = 20;
-		cleanDrainWaterTime = 10 * 60;
+		cleanDrainWaterTime = 360;
 		switchSetFlagI = 1;
 	}
 	else

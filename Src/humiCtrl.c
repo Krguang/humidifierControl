@@ -27,7 +27,7 @@ const uint16_t CONTINUE_INLET_WATER = 1800;				//½øË®Ê±¼ä¼ÆÊ±£¬³¬¹ı30·ÖÖÓ£¬ÅĞ¶ÏÎ
 const uint16_t EXTRA_DRAIN_WATER_TIME = 1200;			//¶îÍâÅÅË®Ê±¼ä
 const uint16_t MAUNAL_DRAIN_WATER_BACK_TIME = 1200;		//ÊÖ¶¯ÅÅË®ºóµÄ×Ô¶¯¹Ø±ÕÊ±¼ä
 const uint16_t LOW_CURRENT_OFF_TIME = 1800;				//µÍµçÁ÷¹Ø»ú ²âÊÔÎª30Ãë£¬Êµ¼ÊÎª30*60Ãë
-
+const uint32_t WORK_TIME_ADDUP_CONST = 2160000;			//ÀÛ¼ÆÔËĞĞÊ±¼ä±¨¾¯ÉÏÏŞ600Ğ¡Ê± 600*3600
 
 uint8_t nonstopWorkFlag;			//Á¬Ğø¹¤×÷±êÖ¾
 uint32_t nonstopWorkCount;			//Á¬Ğø¹¤×÷¼ÆÊı
@@ -90,7 +90,7 @@ uint8_t nostopWorkTake;
 
 static void osDelaySecond(int s);
 static void drainWater(int s);
-static void cleanBucket();
+//static void cleanBucket();
 static void ledSwitch(uint8_t color, uint8_t statu);
 static void ledBlink(uint8_t color);
 static void greenLedDark();
@@ -258,7 +258,7 @@ void humiCtrl() {
 					//ÀÛ¼Æ¹¤×÷600Ğ¡Ê±ºóÂÌµÆÉÁË¸,±¨¾¯¼ÌµçÆ÷ÎüºÏ
 					if (1 == nonstopWorkFlag)
 					{
-						if (nonstopWorkCount > 30) {
+						if (nonstopWorkCount > WORK_TIME_ADDUP_CONST) {
 							nostopWorkTake = 1;
 							signalRelayOpen;
 						}
@@ -303,7 +303,7 @@ void humiCtrl() {
 					//ÀÛ¼Æ¹¤×÷600Ğ¡Ê±ºóÂÌµÆÉÁË¸,±¨¾¯¼ÌµçÆ÷ÎüºÏ
 					if (1 == nonstopWorkFlag)
 					{
-						if (nonstopWorkCount > 30) {
+						if (nonstopWorkCount > WORK_TIME_ADDUP_CONST) {
 							nostopWorkTake = 1;
 							
 							signalRelayOpen;
@@ -327,7 +327,7 @@ void humiCtrl() {
 					//ÀÛ¼Æ¹¤×÷600Ğ¡Ê±ºóÂÌµÆÉÁË¸,±¨¾¯¼ÌµçÆ÷ÎüºÏ
 					if (1 == nonstopWorkFlag)
 					{
-						if (nonstopWorkCount > 30) {
+						if (nonstopWorkCount > WORK_TIME_ADDUP_CONST) {
 							nostopWorkTake = 1;
 							
 							signalRelayOpen;
@@ -424,7 +424,7 @@ void humiCtrl() {
 				{
 					printf("½øÈë5·ÖÖÓÅÅË®½×¶Î \n");
 
-					if (stopDrainWaterWashBucketCount < 300)	//²»µ½5·ÖÖÓ
+					if (stopDrainWaterWashBucketCount < cleanDrainWaterTime)	//²»µ½5·ÖÖÓ
 					{
 						contactorClose;							//¹Ø±Õ½Ó´¥Æ÷£¬´ò¿ªÅÅË®·§£¬¹Ø±Õ½øË®·§
 						drainValveOpen;
@@ -503,7 +503,7 @@ void humiCtrl() {
 			}
 		}
 
-		manualDrainWaterScan(MAUNAL_DRAIN_WATER_BACK_TIME);	//ÊÖ¶¯ÅÅË®µÄÉ¨Ãèº¯Êı¡£
+		manualDrainWaterScan(cleanDrainWaterTime);	//ÊÖ¶¯ÅÅË®µÄÉ¨Ãèº¯Êı¡£Ê±¼äcleanDrainWaterTime×Ô¶¯¹Ø±Õ
 	}
 	else
 	{
@@ -657,6 +657,8 @@ static void drainWater(int s) {
 }
 
 //Ï´Í°
+
+/*
 static void cleanBucket() {
 
 	while (0 == waterLevelWarning) {
@@ -667,7 +669,7 @@ static void cleanBucket() {
 	}
 	drainWater(cleanDrainWaterTime);
 }
-
+*/
 
 /**
 * @brief Ö¸Ê¾µÆ¿ª¹Ø
