@@ -1,7 +1,7 @@
 #include "humiCtrl.h"
 #include "dataProcessing.h"
 #include "cmsis_os.h"
-
+#include "main.h"
 
 #define contactorOpen		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_SET)		//接触器开关
 #define contactorClose		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_RESET)
@@ -88,7 +88,6 @@ uint16_t stopDrainWaterWashBucketCount;				//洗桶停止排水计数
 uint8_t washBucketStage;							//洗桶所处在的阶段
 uint8_t nostopWorkTake;							
 uint8_t beyond120Count;
-
 
 static void osDelaySecond(int s);
 static void drainWater(int s);
@@ -199,7 +198,7 @@ void humiCtrl() {
 			allowRunFlagWashBucket = 0;
 		}
 	
-
+		/*
 		
 		printf("当前电流 = %d \n", humiCurrent);
 		printf("能量开度 = %d \n", powerProportion);
@@ -210,9 +209,12 @@ void humiCtrl() {
 		printf("开始进水电流 = %d \n", startInletCurrent);
 		printf("停止进水电流 = %d \n", stopInletCurrent);
 		printf("开始排水电流 = %d \n\n", startDrainCurrent);
+		*/
 
 	//	printf("allowRunFlagDrainWater = %d \n\n", allowRunFlagDrainWater);
-	//	printf("alarmFlag = %d \n\n", alarmFlag);
+		
+	//	printf("allowRunFlagDrainWater = %d \n\n", allowRunFlagDrainWater);
+		
 	//	printf("allowRunFlagProportion = %d \n\n", allowRunFlagProportion);
 	//	printf("waterValveFailureFlag = %d \n\n", waterValveFailureFlag);
 		
@@ -243,8 +245,8 @@ void humiCtrl() {
 					
 					ledSwitch(1, 1);
 					ledSwitch(0, 0);
-
 				}
+
 				else if (humiCurrent >= startDrainCurrent)			//超过排水电流，排水
 				{
 					osDelaySecond(1);
@@ -253,23 +255,15 @@ void humiCtrl() {
 						ledSwitch(1, 0);
 						drainWater(autoDrainWaterTime);				//此处排水该为阻塞式，因为排水时接触器会断开，无电流，会误进入其他状态
 						beyond120Count++;
-						if (beyond120Count >= 5 )					//基准电流超过120%，自动排水五次，触发高电流报警
+						if (beyond120Count >= 2 )					//基准电流超过120%，自动排水五次，触发高电流报警
 						{
 							beyond120Count = 0;
-							overCurrentFlag = 1;
-							if (overCurrentCount > 15)
-							{
-								overCurrentFlag = 0;
-								overCurrentCount = 0;
-								if (humiCurrent >= shutOffCurrentTopLimit)
-								{
-									humiSuspend();
-									alarmFlag = 1;
-									ledSwitch(1, 1);
-									ledSwitch(0, 0);
-								}
-							}
-
+							
+							//humiSuspend();
+							contactorClose;
+							inletValveClose;
+							drainValveClose;
+							alarmFlag = 1;
 							ledSwitch(1, 1);
 							ledSwitch(0, 0);
 						}
@@ -525,7 +519,7 @@ void humiCtrl() {
 			}
 		}
 
-		manualDrainWaterScan(cleanDrainWaterTime);	//手动排水的扫描函数。时间cleanDrainWaterTime自动关闭
+		manualDrainWaterScan(30);	//手动排水的扫描函数。时间cleanDrainWaterTime自动关闭
 	}
 	else
 	{
@@ -565,6 +559,7 @@ void humiCtrl() {
 //按键扫描函数
 void keyScan() {
 
+	
 	if (1 == HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15))		//IO 是高电平，说明按键没有被按下，这时要及时清零一些标志位
 	{
 		keyLock = 0;			//按键自锁标志清零
@@ -626,7 +621,9 @@ void humiCtrlInit() {
 	allowRunFlagDrainWater = 1;
 	allowRunFlagProportion = 1;
 	waterValveFailureFlag = 1;
-	
+	manualDrainWaterFlag = 0;
+
+
 	lowerLimitCount = 0;
 	overCurrentCount = 0;
 	drainWaterCount = 0;
@@ -646,6 +643,9 @@ void humiCtrlInit() {
 //手动排水
 static void manualDrainWaterScan(int s) {
 
+	printf("allowRunFlagDrainWater = %d\n", allowRunFlagDrainWater);
+	printf("manualDrainWaterFlag = %d\n", manualDrainWaterFlag);
+	printf("manualDrainWaterCount = %d\n\n", manualDrainWaterCount);
 	if (0 == allowRunFlagDrainWater)
 	{
 		contactorClose;
