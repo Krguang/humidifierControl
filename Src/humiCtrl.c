@@ -126,6 +126,7 @@ void humiCtrl() {
 	printf("inletTimeCount = %d \n", inletTimeCount);
 	printf("waterValveFailureFlag = %d \n", waterValveFailureFlag);
 	*/
+
 	if (1 == waterLevelWarning)			//高水位报警
 	{
 		waterLevelFlag = 1;
@@ -652,6 +653,7 @@ static void manualDrainWaterScan(int s) {
 		inletValveClose;
 		drainValveOpen;
 		manualDrainWaterFlag = 1;
+		allowRunFlagWashBucket = 1;	//手动洗桶时关闭首次上电自动洗桶
 	}
 	//printf("manualDrainWaterCount = %d \n", manualDrainWaterCount);
 	if (manualDrainWaterCount > s)
