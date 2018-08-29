@@ -230,6 +230,7 @@ void humiCtrl() {
 
 				if (humiCurrent >= shutOffCurrentTopLimit)			//超过关断电流，关机
 				{
+					inletValveClose;
 					overCurrentFlag = 1;
 					if (overCurrentCount > 15)
 					{
@@ -244,8 +245,8 @@ void humiCtrl() {
 						}
 					}
 					
-					ledSwitch(1, 1);
-					ledSwitch(0, 0);
+					ledSwitch(0, 1);
+					ledSwitch(1, 0);
 				}
 
 				else if (humiCurrent >= startDrainCurrent)			//超过排水电流，排水
