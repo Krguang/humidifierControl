@@ -653,7 +653,6 @@ static void osDelaySecond(int s) {
 void fristWashBucket(){
 
 	allowRunFlagWashBucket = 0;
-
 }
 
 
@@ -676,7 +675,6 @@ void humiCtrlInit() {
 	allowRunFlagProportion = 1;
 	waterValveFailureFlag = 1;
 	manualDrainWaterFlag = 0;
-
 
 	lowerLimitCount = 0;
 	overCurrentCount = 0;
@@ -795,7 +793,6 @@ static void ledBlink(uint8_t color) {
 
 //绿灯暗，专用于待机
 static void greenLedDark() {
-
 
 }
 
