@@ -88,6 +88,16 @@ uint8_t washBucketStage;							//洗桶所处在的阶段
 uint8_t nostopWorkTake;							
 uint8_t beyond120Count;
 
+uint8_t ledStopWorkFlag;				//停止工作
+uint8_t ledNormalWorkFlag;				//正常工作
+uint8_t ledWaterUpperLevelFlag;			//高水位
+uint8_t ledDrainWaterHandFlag;			//手动排水
+uint8_t ledReplaceBucketFlag;			//换桶提示
+uint8_t ledCurrentUpperLimitFlag;		//超电流
+uint8_t ledDialSwitchErrorFlag;			//拨码错误
+uint8_t ledCurrentLowLimitFlag;			//低电流
+
+
 static void osDelaySecond(int s);
 static void drainWater(int s);
 //static void cleanBucket();
@@ -97,7 +107,7 @@ static void greenLedDark();
 static void humiSuspend();
 static void inletValveOpenWithLimit();
 static void manualDrainWaterScan(int s);
-
+static void alarmLampHandle();
 
 /*
 		设置电流90%			设置电流110%			基准电流120%			基准电流140%
@@ -117,15 +127,6 @@ void humiCtrl() {
 		waterValveFailureFlag = 0;
 	}
 
-	//printf("needWashBucketFlag = %d \n", needWashBucketFlag);
-	//printf("needWashBucketCount = %d \n", needWashBucketCount);
-	//printf("allowRunFlagWashBucket = %d \n", allowRunFlagWashBucket);
-	/*
-	printf("inletFlag = %d \n", inletFlag);
-	printf("inletTimeCount = %d \n", inletTimeCount);
-	printf("waterValveFailureFlag = %d \n", waterValveFailureFlag);
-	*/
-
 	if (1 == waterLevelWarning)			//高水位报警
 	{
 		waterLevelFlag = 1;
@@ -139,17 +140,30 @@ void humiCtrl() {
 	{
 		waterLevelWarningEffect = 1;
 		inletValveClose;
-		ledBlink(1);
-		ledSwitch(0, 1);
+		//ledBlink(1);
+		//ledSwitch(0, 1);
+		//ledStopWorkFlag = 0;
+		//ledNormalWorkFlag = 0;
+		ledWaterUpperLevelFlag = 1;
+		//ledCurrentUpperLimitFlag = 0;
+		//ledCurrentLowLimitFlag = 0;
 	}
 	
 	if (waterLevelOffCount >= WATER_LEVEL_OFF_COUNT_CONST)		//高水位恢复正常15秒消抖
 	{
 		waterLevelWarningEffect = 0;
+
+		//ledStopWorkFlag = 0;
+		//ledNormalWorkFlag = 1;
+		ledWaterUpperLevelFlag = 0;
+		//ledCurrentUpperLimitFlag = 0;
+		//ledCurrentLowLimitFlag = 0;
 	}
 
 	if (1 == switchSetFlag)				//拨码开关正常初始化
 	{
+		ledDialSwitchErrorFlag = 0;
+
 		if (humiMode == PROPORTIONMODE)
 		{
 			shutOffCurrentLowerLimit = humiCurrentUpperLimit*humiOpening / 1000.0 * powerProportion / 1000.0 * 0.3;
@@ -198,27 +212,6 @@ void humiCtrl() {
 			allowRunFlagWashBucket = 0;
 		}
 	
-		/*
-		
-		printf("当前电流 = %d \n", humiCurrent);
-		printf("能量开度 = %d \n", powerProportion);
-		printf("比例开度 = %d \n", humiOpening);
-		printf("当前设定电流 = %d \n", humiCurrentUpperLimit);
-		printf("关闭低电流 = %d \n", shutOffCurrentLowerLimit);
-		printf("关闭高电流 = %d \n", shutOffCurrentTopLimit);
-		printf("开始进水电流 = %d \n", startInletCurrent);
-		printf("停止进水电流 = %d \n", stopInletCurrent);
-		printf("开始排水电流 = %d \n\n", startDrainCurrent);
-		*/
-
-	//	printf("allowRunFlagDrainWater = %d \n\n", allowRunFlagDrainWater);
-		
-	//	printf("allowRunFlagDrainWater = %d \n\n", allowRunFlagDrainWater);
-		
-	//	printf("allowRunFlagProportion = %d \n\n", allowRunFlagProportion);
-	//	printf("waterValveFailureFlag = %d \n\n", waterValveFailureFlag);
-		
-
 		//运行需满足四个条件：1.开关信号闭合。2.非排水状态。3.非报警。4.比例模式时，比例值大于25%
 		if ((1 == allowRunFlagDrainWater) && (0 == alarmFlag) && (1 == allowRunFlagProportion)&&(1 == waterValveFailureFlag)&&(1 == allowRunFlagWashBucket))
 		{
@@ -237,36 +230,60 @@ void humiCtrl() {
 						overCurrentCount = 0;
 						if (humiCurrent >= shutOffCurrentTopLimit)
 						{
-							humiSuspend();
+							//humiSuspend();
 							alarmFlag = 1;
-							ledSwitch(1, 1);
-							ledSwitch(0, 0);
+							//ledSwitch(1, 1);
+							//ledSwitch(0, 0);
+
+						//	ledStopWorkFlag = 0;
+							ledNormalWorkFlag = 0;
+						//	ledWaterUpperLevelFlag = 0;
+							ledCurrentUpperLimitFlag = 1;
+						//	ledCurrentLowLimitFlag = 0;
 						}
 					}
+					else
+					{
+					//	ledStopWorkFlag = 0;
+						ledNormalWorkFlag = 1;
+					//	ledWaterUpperLevelFlag = 0;
+						ledCurrentUpperLimitFlag = 0;
+					//	ledCurrentLowLimitFlag = 0;
+					}
 					
-					ledSwitch(0, 1);
-					ledSwitch(1, 0);
+					//ledSwitch(0, 1);
+					//ledSwitch(1, 0);
 				}
 
 				else if (humiCurrent >= startDrainCurrent)			//超过排水电流，排水
 				{
 					osDelaySecond(1);
 					if (humiCurrent > startDrainCurrent) {
-						ledSwitch(0, 1);
-						ledSwitch(1, 0);
+					//	ledSwitch(0, 1);
+					//	ledSwitch(1, 0);
+						ledStopWorkFlag = 0;
+						ledNormalWorkFlag = 1;
+					//	ledWaterUpperLevelFlag = 0;
+						ledCurrentUpperLimitFlag = 0;
+						ledCurrentLowLimitFlag = 0;
+
 						drainWater(autoDrainWaterTime);				//此处排水该为阻塞式，因为排水时接触器会断开，无电流，会误进入其他状态
 						beyond120Count++;
 						if (beyond120Count >= 5 )					//基准电流超过120%，自动排水五次，触发高电流报警
 						{
 							beyond120Count = 0;
-							
-							//humiSuspend();
-							contactorClose;
-							inletValveClose;
-							drainValveClose;
+						//	contactorClose;
+						//	inletValveClose;
+						//	drainValveClose;
 							alarmFlag = 1;
-							ledSwitch(1, 1);
-							ledSwitch(0, 0);
+						//	ledSwitch(1, 1);
+						//	ledSwitch(0, 0);
+
+							ledStopWorkFlag = 0;
+							ledNormalWorkFlag = 0;
+					//		ledWaterUpperLevelFlag = 0;
+							ledCurrentUpperLimitFlag = 1;
+							ledCurrentLowLimitFlag = 0;
 						}
 					}
 				}
@@ -286,12 +303,16 @@ void humiCtrl() {
 
 					if (1 == nostopWorkTake)
 					{
-						ledBlink(0);
+						//ledBlink(0);
+
+						ledReplaceBucketFlag = 1;
+						
 					}
 					else
 					{
-						ledSwitch(0, 1);
-						ledSwitch(1, 0);
+						//ledSwitch(0, 1);
+						//ledSwitch(1, 0);
+						ledReplaceBucketFlag = 0;
 					}
 				}
 
@@ -300,6 +321,12 @@ void humiCtrl() {
 					//drainValveClose;
 					//inletValveClose;
 					contactorOpen;
+
+					ledStopWorkFlag = 0;
+					ledNormalWorkFlag = 1;
+				//	ledWaterUpperLevelFlag = 0;
+					ledCurrentUpperLimitFlag = 0;
+					ledCurrentLowLimitFlag = 0;
 					
 					extraDrainWaterFlag = 1;								//开始额外排水计时
 					if (extraDrainWaterCount > EXTRA_DRAIN_WATER_TIME)		//正常运行20分钟后开始自动排水
@@ -330,17 +357,25 @@ void humiCtrl() {
 
 					if (1 == nostopWorkTake)
 					{
-						ledBlink(0);
+						//ledBlink(0);
+						ledReplaceBucketFlag = 1;
 					}
 					else
 					{
-						ledSwitch(1, 0);
-						ledSwitch(0, 1);
+						//ledSwitch(1, 0);
+						//ledSwitch(0, 1);
+						ledReplaceBucketFlag = 0;
 					}
 				}
 
 				else if (humiCurrent < startInletCurrent)			//电流不足，进水
 				{
+
+					ledStopWorkFlag = 0;
+					ledNormalWorkFlag = 1;
+				//	ledWaterUpperLevelFlag = 0;
+					ledCurrentUpperLimitFlag = 0;
+					ledCurrentLowLimitFlag = 0;
 
 					//累计工作600小时后绿灯闪烁,报警继电器吸合
 					if (1 == nonstopWorkFlag)
@@ -354,12 +389,14 @@ void humiCtrl() {
 
 					if (1 == nostopWorkTake)
 					{
-						ledBlink(0);
+						//ledBlink(0);
+						ledReplaceBucketFlag = 1;
 					}
 					else
 					{
-						ledSwitch(1, 0);
-						ledSwitch(0, 1);
+						//ledSwitch(1, 0);
+						//ledSwitch(0, 1);
+						ledReplaceBucketFlag = 0;
 					}
 
 					drainValveClose;
@@ -368,19 +405,19 @@ void humiCtrl() {
 					if (humiCurrent <= shutOffCurrentLowerLimit)
 					{
 						startLowerLimitCountFlag = 1;
-						if (lowerLimitCount >= LOW_CURRENT_OFF_TIME)	//低电流关机 测试为30秒，实际为30*60秒
+						if (lowerLimitCount >= LOW_CURRENT_OFF_TIME)	//低电流关机 测试为30秒，实际为10*60秒
 						{
 							//startLowerLimitCountFlag = 0;
 							lowerLimitCount = LOW_CURRENT_OFF_TIME;
 							alarmFlag = 1;
-							humiSuspend();
+							ledStopWorkFlag = 0;
+							ledNormalWorkFlag = 0;
+					//		ledWaterUpperLevelFlag = 0;
+							ledCurrentUpperLimitFlag = 0;
+							ledCurrentLowLimitFlag = 1;
+						//	humiSuspend();
 						}
 					}
-					else {
-						//ledBlink(1);
-						
-					}
-		
 				}
 				
 				nonstopWorkFlag = 1;
@@ -393,7 +430,7 @@ void humiCtrl() {
 		}
 		else if (1 == alarmFlag)		//有报警信号
 		{
-
+			/*
 			if (1 == startLowerLimitCountFlag)
 			{
 				ledBlink(1);
@@ -404,7 +441,10 @@ void humiCtrl() {
 				ledSwitch(1, 1);
 				ledSwitch(0, 0);
 			}
+			*/
 
+
+			humiSuspend();
 			signalRelayOpen;
 			nonstopWorkFlag = 0;
 		}
@@ -418,6 +458,9 @@ void humiCtrl() {
 				if (startDrainWaterWashBucketCount < 30)
 				{
 					printf("进入同时进排水阶段 \n");
+					ledStopWorkFlag = 0;
+					ledNormalWorkFlag = 1;
+
 					inletValveOpenWithLimit();
 					drainValveOpen;
 				}
@@ -441,7 +484,7 @@ void humiCtrl() {
 				if (1 == stopDrainWaterWashBucketFlag)
 				{
 					printf("进入5分钟排水阶段 \n");
-
+					
 					if (stopDrainWaterWashBucketCount < cleanDrainWaterTime)	//不到5分钟
 					{
 						contactorClose;							//关闭接触器，打开排水阀，关闭进水阀
@@ -470,7 +513,13 @@ void humiCtrl() {
 
 		else if (0 == allowRunFlagProportion)	//外部比例信号过低，停止加湿
 		{
+			ledStopWorkFlag = 1;
+			ledNormalWorkFlag = 0;
+		//	ledWaterUpperLevelFlag = 0;
+			ledCurrentUpperLimitFlag = 0;
+			ledCurrentLowLimitFlag = 0;
 			humiSuspend();
+
 		}
 		else if(0 == waterValveFailureFlag)		//水阀损坏
 		{
@@ -478,8 +527,13 @@ void humiCtrl() {
 			contactorClose;
 			inletValveClose;
 			drainValveClose;
-			ledBlink(1);
-			ledSwitch(0, 0);
+			//ledBlink(1);
+			//ledSwitch(0, 0);
+			ledStopWorkFlag = 0;
+			ledNormalWorkFlag = 0;
+		//	ledWaterUpperLevelFlag = 0;
+			ledCurrentUpperLimitFlag = 0;
+			ledCurrentLowLimitFlag = 1;
 			signalRelayOpen;
 		}
 		
@@ -501,6 +555,7 @@ void humiCtrl() {
 
 		if (0 == allowRunFlagDrainWater)		//手动排水时，红绿，红绿交错闪烁
 		{
+			/*
 			switch (ledBlinkFlagTemp4)
 			{
 			case 0: ledSwitch(1, 1);
@@ -518,11 +573,74 @@ void humiCtrl() {
 			default:
 				break;
 			}
+			*/
+
+			ledStopWorkFlag = 0;
+			ledNormalWorkFlag = 0;
+		//	ledWaterUpperLevelFlag = 0;
+			ledDrainWaterHandFlag = 1;
+			ledCurrentUpperLimitFlag = 0;
+			ledCurrentLowLimitFlag = 0;
+		}
+		else
+		{
+			ledDrainWaterHandFlag = 0;
 		}
 
 		manualDrainWaterScan(30);	//手动排水的扫描函数。时间cleanDrainWaterTime自动关闭
 	}
 	else
+	{	
+		ledStopWorkFlag = 0;
+		ledNormalWorkFlag = 0;
+		ledWaterUpperLevelFlag = 0;
+		ledDrainWaterHandFlag = 0;
+		ledReplaceBucketFlag = 0;
+		ledCurrentUpperLimitFlag = 0;
+		ledDialSwitchErrorFlag = 1;
+		ledCurrentLowLimitFlag = 0;
+
+		//拨码不正常时的灯光
+		/*
+		switch (ledBlinkFlagTemp8)
+		{
+		case 0: ledSwitch(1, 1);
+			ledSwitch(0, 0);
+			break;
+		case 1:	ledSwitch(1, 0);
+			ledSwitch(0, 0);
+			break;
+		case 2: ledSwitch(1, 1);
+			ledSwitch(0, 0);
+			break;
+		case 3:	ledSwitch(1, 0);
+			ledSwitch(0, 0);
+			break;
+		case 4: ledSwitch(0, 0);
+			ledSwitch(0, 1);
+			break;
+		case 5:	ledSwitch(0, 0);
+			ledSwitch(0, 0);
+			break;
+		case 6:	ledSwitch(0, 0);
+			ledSwitch(0, 1);
+			break;
+		case 7:	ledSwitch(0, 0);
+			ledSwitch(0, 0);
+			break;
+		default:
+			break;
+		}
+		*/
+	}
+
+	alarmLampHandle();
+}
+
+//报警灯集中处理
+static void alarmLampHandle() {
+
+	if (1 == ledDialSwitchErrorFlag)								//拨码错误
 	{
 		switch (ledBlinkFlagTemp8)
 		{
@@ -554,13 +672,68 @@ void humiCtrl() {
 			break;
 		}
 	}
+
+	else if (1 == ledDrainWaterHandFlag)							//手动排水
+	{
+		switch (ledBlinkFlagTemp4)
+		{
+		case 0: ledSwitch(1, 1);
+			ledSwitch(0, 0);
+			break;
+		case 1:	ledSwitch(1, 0);
+			ledSwitch(0, 1);
+			break;
+		case 2:	ledSwitch(1, 1);
+			ledSwitch(0, 0);
+			break;
+		case 3:	ledSwitch(1, 0);
+			ledSwitch(0, 1);
+			break;
+		default:
+			break;
+		}
+	}
+
+	else if(1 == ledWaterUpperLevelFlag)							//最大水位
+	{
+		ledBlink(1);
+		ledSwitch(0, 1);
+	}
+
+	else if(1 == ledCurrentUpperLimitFlag)							//电流超
+	{
+		ledSwitch(1, 1);
+		ledSwitch(0, 0);
+	}
+
+	else if (1 == ledCurrentLowLimitFlag)							//电流低
+	{
+		ledBlink(1);
+		ledSwitch(0, 0);
+	}
+
+	else if (1 == ledStopWorkFlag)									//停止工作
+	{
+		ledSwitch(0, 0);
+		ledSwitch(1, 1);
+	}
+
+	else if ((1 == ledNormalWorkFlag)&&(1 == ledReplaceBucketFlag))	//需要换桶
+	{
+		ledBlink(0);
+		ledSwitch(1, 0);
+	}
+	else															//正常工作
+	{
+		ledSwitch(0, 1);
+		ledSwitch(1, 0);
+	}
 }
 
 
 //按键扫描函数
 void keyScan() {
 
-	
 	if (1 == HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15))		//IO 是高电平，说明按键没有被按下，这时要及时清零一些标志位
 	{
 		keyLock = 0;			//按键自锁标志清零
@@ -637,6 +810,14 @@ void humiCtrlInit() {
 	startDrainCurrent = humiCurrentUpperLimit * 1.2;
 
 	washBucketStage = 1;								//洗桶所处在的阶段
+	
+	ledStopWorkFlag = 1;				
+	ledNormalWorkFlag = 0;				
+	ledWaterUpperLevelFlag = 0;
+	ledDrainWaterHandFlag = 0;
+	ledCurrentUpperLimitFlag = 0;
+	ledDialSwitchErrorFlag = 0;
+	ledCurrentLowLimitFlag = 0;
 }
 
 	
@@ -644,9 +825,7 @@ void humiCtrlInit() {
 //手动排水
 static void manualDrainWaterScan(int s) {
 
-	printf("allowRunFlagDrainWater = %d\n", allowRunFlagDrainWater);
-	printf("manualDrainWaterFlag = %d\n", manualDrainWaterFlag);
-	printf("manualDrainWaterCount = %d\n\n", manualDrainWaterCount);
+
 	if (0 == allowRunFlagDrainWater)
 	{
 		contactorClose;
@@ -655,16 +834,10 @@ static void manualDrainWaterScan(int s) {
 		manualDrainWaterFlag = 1;
 		allowRunFlagWashBucket = 1;	//手动洗桶时关闭首次上电自动洗桶
 	}
-	//printf("manualDrainWaterCount = %d \n", manualDrainWaterCount);
+	
 	if (manualDrainWaterCount > s)
 	{
 		manualDrainWaterFlag = 0;
-		/*
-		manualDrainWaterCount = 0;
-		drainValveClose;
-		contactorOpen;
-		allowRunFlagDrainWater = 1;
-		*/
 		humiCtrlInit();
 	}
 }
@@ -771,6 +944,6 @@ static void humiSuspend() {
 	inletValveClose;
 	drainValveClose;
 	//greenLedDark();
-	ledSwitch(0, 0);
-	ledSwitch(1, 0);
+	//ledSwitch(0, 0);
+	//ledSwitch(1, 0);
 }
