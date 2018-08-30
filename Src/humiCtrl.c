@@ -18,7 +18,6 @@
 #define waterLevelWarning	HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4)						//¸ßË®Î»±¨¾¯
 #define switchSignal		HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_15)						//¿ª¹ØĞÅºÅ
 
-
 const uint8_t KEY_TIME = 50;							//°´¼üÏû¶¶ÑÓÊ±Ê±¼ä
 const uint8_t WATER_LEVEL_OFF_COUNT_CONST = 15;			//¸ßË®Î»±¨¾¯¶Ï¿ªÃ¿Ãë¼ÆÊıÉè¶¨Öµ
 const uint8_t WATER_LEVEL_ON_COUNT_CONST = 5;			//¸ßË®Î»±¨¾¯ÉúĞ§Ã¿Ãë¼ÆÊıÉè¶¨Öµ
@@ -26,7 +25,7 @@ const uint32_t NEED_WASH_BUCKET_COUNT_CONST = 259200;	//Ï´Í°¼ÆÊıÉÏÏŞ72*60*60 72Ğ
 const uint16_t CONTINUE_INLET_WATER = 1800;				//½øË®Ê±¼ä¼ÆÊ±£¬³¬¹ı30·ÖÖÓ£¬ÅĞ¶ÏÎª½øË®·§»ò³öË®·§Ëğ»µ	
 const uint16_t EXTRA_DRAIN_WATER_TIME = 1200;			//¶îÍâÅÅË®Ê±¼ä
 const uint16_t MAUNAL_DRAIN_WATER_BACK_TIME = 1200;		//ÊÖ¶¯ÅÅË®ºóµÄ×Ô¶¯¹Ø±ÕÊ±¼ä
-const uint16_t LOW_CURRENT_OFF_TIME = 1800;				//µÍµçÁ÷¹Ø»ú ²âÊÔÎª30Ãë£¬Êµ¼ÊÎª30*60Ãë
+const uint16_t LOW_CURRENT_OFF_TIME = 600;				//µÍµçÁ÷¹Ø»ú ²âÊÔÎª30Ãë£¬Êµ¼ÊÎª10*60Ãë
 const uint32_t WORK_TIME_ADDUP_CONST = 2160000;			//ÀÛ¼ÆÔËĞĞÊ±¼ä±¨¾¯ÉÏÏŞ600Ğ¡Ê± 600*3600
 
 uint8_t nonstopWorkFlag;			//Á¬Ğø¹¤×÷±êÖ¾
@@ -257,7 +256,7 @@ void humiCtrl() {
 						ledSwitch(1, 0);
 						drainWater(autoDrainWaterTime);				//´Ë´¦ÅÅË®¸ÃÎª×èÈûÊ½£¬ÒòÎªÅÅË®Ê±½Ó´¥Æ÷»á¶Ï¿ª£¬ÎŞµçÁ÷£¬»áÎó½øÈëÆäËû×´Ì¬
 						beyond120Count++;
-						if (beyond120Count >= 2 )					//»ù×¼µçÁ÷³¬¹ı120%£¬×Ô¶¯ÅÅË®Îå´Î£¬´¥·¢¸ßµçÁ÷±¨¾¯
+						if (beyond120Count >= 5 )					//»ù×¼µçÁ÷³¬¹ı120%£¬×Ô¶¯ÅÅË®Îå´Î£¬´¥·¢¸ßµçÁ÷±¨¾¯
 						{
 							beyond120Count = 0;
 							
