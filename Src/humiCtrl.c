@@ -23,10 +23,10 @@ const uint8_t WATER_LEVEL_OFF_COUNT_CONST = 15;			//高水位报警断开每秒计数设定值
 const uint8_t WATER_LEVEL_ON_COUNT_CONST = 5;			//高水位报警生效每秒计数设定值
 const uint32_t NEED_WASH_BUCKET_COUNT_CONST = 259200;	//洗桶计数上限72*60*60 72小时 = 259200    测试值：30秒
 const uint16_t CONTINUE_INLET_WATER = 1800;				//进水时间计时，超过30分钟，判断为进水阀或出水阀损坏	
-const uint16_t EXTRA_DRAIN_WATER_TIME = 1200;			//额外排水时间
+const uint16_t EXTRA_DRAIN_WATER_TIME = 1200;			//额外排水时间 20*60 = 1200
 const uint16_t MAUNAL_DRAIN_WATER_BACK_TIME = 1200;		//手动排水后的自动关闭时间
 const uint16_t LOW_CURRENT_OFF_TIME = 600;				//低电流关机 测试为30秒，实际为10*60秒
-const uint32_t WORK_TIME_ADDUP_CONST = 2160000;			//累计运行时间报警上限600小时 600*3600
+const uint32_t WORK_TIME_ADDUP_CONST = 2160000;			//累计运行时间报警上限600小时 600*3600 = 2160000
 
 uint8_t nonstopWorkFlag;			//连续工作标志
 uint32_t nonstopWorkCount;			//连续工作计数
@@ -108,6 +108,7 @@ static void humiSuspend();
 static void inletValveOpenWithLimit();
 static void manualDrainWaterScan(int s);
 static void alarmLampHandle();
+static void extraDrainWater();
 
 /*
 		设置电流90%			设置电流110%			基准电流120%			基准电流140%
@@ -235,7 +236,7 @@ void humiCtrl() {
 							//ledSwitch(1, 1);
 							//ledSwitch(0, 0);
 
-						//	ledStopWorkFlag = 0;
+							ledStopWorkFlag = 0;
 							ledNormalWorkFlag = 0;
 						//	ledWaterUpperLevelFlag = 0;
 							ledCurrentUpperLimitFlag = 1;
@@ -244,7 +245,7 @@ void humiCtrl() {
 					}
 					else
 					{
-					//	ledStopWorkFlag = 0;
+						ledStopWorkFlag = 0;
 						ledNormalWorkFlag = 1;
 					//	ledWaterUpperLevelFlag = 0;
 						ledCurrentUpperLimitFlag = 0;
@@ -290,6 +291,11 @@ void humiCtrl() {
 
 				else if (humiCurrent >= stopInletCurrent)			//停止进水
 				{
+					ledStopWorkFlag = 0;
+					ledNormalWorkFlag = 1;
+
+					extraDrainWater();
+
 					//累计工作600小时后绿灯闪烁,报警继电器吸合
 					if (1 == nonstopWorkFlag)
 					{
@@ -328,6 +334,8 @@ void humiCtrl() {
 					ledCurrentUpperLimitFlag = 0;
 					ledCurrentLowLimitFlag = 0;
 					
+					extraDrainWater();
+					/*
 					extraDrainWaterFlag = 1;								//开始额外排水计时
 					if (extraDrainWaterCount > EXTRA_DRAIN_WATER_TIME)		//正常运行20分钟后开始自动排水
 					{
@@ -344,6 +352,7 @@ void humiCtrl() {
 							contactorOpen;
 						}
 					}
+					*/
 
 					//累计工作600小时后绿灯闪烁,报警继电器吸合
 					if (1 == nonstopWorkFlag)
@@ -637,6 +646,30 @@ void humiCtrl() {
 	alarmLampHandle();
 }
 
+
+//额外排水
+
+static void extraDrainWater() {
+
+	extraDrainWaterFlag = 1;								//开始额外排水计时
+	if (extraDrainWaterCount > EXTRA_DRAIN_WATER_TIME)		//正常运行20分钟后开始自动排水
+	{
+		extraDrainWaterCount = 0;
+		extraDrainWaterFlag = 0;
+
+		if (extraDrainWaterTime > 0)
+		{
+			contactorClose;
+			inletValveClose;
+			drainValveOpen;
+			osDelaySecond(extraDrainWaterTime);
+			drainValveClose;
+			contactorOpen;
+		}
+	}
+
+}
+
 //报警灯集中处理
 static void alarmLampHandle() {
 
@@ -715,7 +748,7 @@ static void alarmLampHandle() {
 	else if (1 == ledStopWorkFlag)									//停止工作
 	{
 		ledSwitch(0, 0);
-		ledSwitch(1, 1);
+		ledSwitch(1, 0);
 	}
 
 	else if ((1 == ledNormalWorkFlag)&&(1 == ledReplaceBucketFlag))	//需要换桶
