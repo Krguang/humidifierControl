@@ -100,7 +100,6 @@ uint8_t ledCurrentLowLimitFlag;			//低电流
 
 static void osDelaySecond(int s);
 static void drainWater(int s);
-//static void cleanBucket();
 static void ledSwitch(uint8_t color, uint8_t statu);
 static void ledBlink(uint8_t color);
 static void greenLedDark();
@@ -141,24 +140,13 @@ void humiCtrl() {
 	{
 		waterLevelWarningEffect = 1;
 		inletValveClose;
-		//ledBlink(1);
-		//ledSwitch(0, 1);
-		//ledStopWorkFlag = 0;
-		//ledNormalWorkFlag = 0;
 		ledWaterUpperLevelFlag = 1;
-		//ledCurrentUpperLimitFlag = 0;
-		//ledCurrentLowLimitFlag = 0;
 	}
 	
 	if (waterLevelOffCount >= WATER_LEVEL_OFF_COUNT_CONST)		//高水位恢复正常15秒消抖
 	{
 		waterLevelWarningEffect = 0;
-
-		//ledStopWorkFlag = 0;
-		//ledNormalWorkFlag = 1;
 		ledWaterUpperLevelFlag = 0;
-		//ledCurrentUpperLimitFlag = 0;
-		//ledCurrentLowLimitFlag = 0;
 	}
 
 	if (1 == switchSetFlag)				//拨码开关正常初始化
@@ -231,40 +219,27 @@ void humiCtrl() {
 						overCurrentCount = 0;
 						if (humiCurrent >= shutOffCurrentTopLimit)
 						{
-							//humiSuspend();
 							alarmFlag = 1;
-							//ledSwitch(1, 1);
-							//ledSwitch(0, 0);
-
 							ledStopWorkFlag = 0;
 							ledNormalWorkFlag = 0;
-						//	ledWaterUpperLevelFlag = 0;
 							ledCurrentUpperLimitFlag = 1;
-						//	ledCurrentLowLimitFlag = 0;
 						}
 					}
 					else
 					{
 						ledStopWorkFlag = 0;
 						ledNormalWorkFlag = 1;
-					//	ledWaterUpperLevelFlag = 0;
 						ledCurrentUpperLimitFlag = 0;
-					//	ledCurrentLowLimitFlag = 0;
 					}
-					
-					//ledSwitch(0, 1);
-					//ledSwitch(1, 0);
 				}
 
 				else if (humiCurrent >= startDrainCurrent)			//超过排水电流，排水
 				{
 					osDelaySecond(1);
 					if (humiCurrent > startDrainCurrent) {
-					//	ledSwitch(0, 1);
-					//	ledSwitch(1, 0);
+
 						ledStopWorkFlag = 0;
 						ledNormalWorkFlag = 1;
-					//	ledWaterUpperLevelFlag = 0;
 						ledCurrentUpperLimitFlag = 0;
 						ledCurrentLowLimitFlag = 0;
 
@@ -273,16 +248,9 @@ void humiCtrl() {
 						if (beyond120Count >= 5 )					//基准电流超过120%，自动排水五次，触发高电流报警
 						{
 							beyond120Count = 0;
-						//	contactorClose;
-						//	inletValveClose;
-						//	drainValveClose;
 							alarmFlag = 1;
-						//	ledSwitch(1, 1);
-						//	ledSwitch(0, 0);
-
 							ledStopWorkFlag = 0;
 							ledNormalWorkFlag = 0;
-					//		ledWaterUpperLevelFlag = 0;
 							ledCurrentUpperLimitFlag = 1;
 							ledCurrentLowLimitFlag = 0;
 						}
@@ -294,7 +262,7 @@ void humiCtrl() {
 					ledStopWorkFlag = 0;
 					ledNormalWorkFlag = 1;
 
-					extraDrainWater();
+					extraDrainWater();//正常运行20分钟后开始自动排水
 
 					//累计工作600小时后绿灯闪烁,报警继电器吸合
 					if (1 == nonstopWorkFlag)
@@ -309,50 +277,23 @@ void humiCtrl() {
 
 					if (1 == nostopWorkTake)
 					{
-						//ledBlink(0);
-
-						ledReplaceBucketFlag = 1;
-						
+						ledReplaceBucketFlag = 1;	
 					}
 					else
 					{
-						//ledSwitch(0, 1);
-						//ledSwitch(1, 0);
 						ledReplaceBucketFlag = 0;
 					}
 				}
 
 				else if ((humiCurrent >= startInletCurrent) && (humiCurrent <= startDrainCurrent))//电流在正常工作范围内
 				{
-					//drainValveClose;
-					//inletValveClose;
 					contactorOpen;
-
 					ledStopWorkFlag = 0;
 					ledNormalWorkFlag = 1;
-				//	ledWaterUpperLevelFlag = 0;
 					ledCurrentUpperLimitFlag = 0;
 					ledCurrentLowLimitFlag = 0;
 					
-					extraDrainWater();
-					/*
-					extraDrainWaterFlag = 1;								//开始额外排水计时
-					if (extraDrainWaterCount > EXTRA_DRAIN_WATER_TIME)		//正常运行20分钟后开始自动排水
-					{
-						extraDrainWaterCount = 0;
-						extraDrainWaterFlag = 0;
-
-						if (extraDrainWaterTime > 0)
-						{
-							contactorClose;
-							inletValveClose;
-							drainValveOpen;
-							osDelaySecond(extraDrainWaterTime);
-							drainValveClose;
-							contactorOpen;
-						}
-					}
-					*/
+					extraDrainWater();//正常运行20分钟后开始自动排水
 
 					//累计工作600小时后绿灯闪烁,报警继电器吸合
 					if (1 == nonstopWorkFlag)
@@ -366,13 +307,10 @@ void humiCtrl() {
 
 					if (1 == nostopWorkTake)
 					{
-						//ledBlink(0);
 						ledReplaceBucketFlag = 1;
 					}
 					else
 					{
-						//ledSwitch(1, 0);
-						//ledSwitch(0, 1);
 						ledReplaceBucketFlag = 0;
 					}
 				}
@@ -382,7 +320,6 @@ void humiCtrl() {
 
 					ledStopWorkFlag = 0;
 					ledNormalWorkFlag = 1;
-				//	ledWaterUpperLevelFlag = 0;
 					ledCurrentUpperLimitFlag = 0;
 					ledCurrentLowLimitFlag = 0;
 
@@ -398,13 +335,10 @@ void humiCtrl() {
 
 					if (1 == nostopWorkTake)
 					{
-						//ledBlink(0);
 						ledReplaceBucketFlag = 1;
 					}
 					else
 					{
-						//ledSwitch(1, 0);
-						//ledSwitch(0, 1);
 						ledReplaceBucketFlag = 0;
 					}
 
@@ -416,15 +350,12 @@ void humiCtrl() {
 						startLowerLimitCountFlag = 1;
 						if (lowerLimitCount >= LOW_CURRENT_OFF_TIME)	//低电流关机 测试为30秒，实际为10*60秒
 						{
-							//startLowerLimitCountFlag = 0;
 							lowerLimitCount = LOW_CURRENT_OFF_TIME;
 							alarmFlag = 1;
 							ledStopWorkFlag = 0;
 							ledNormalWorkFlag = 0;
-					//		ledWaterUpperLevelFlag = 0;
 							ledCurrentUpperLimitFlag = 0;
 							ledCurrentLowLimitFlag = 1;
-						//	humiSuspend();
 						}
 					}
 				}
@@ -439,20 +370,6 @@ void humiCtrl() {
 		}
 		else if (1 == alarmFlag)		//有报警信号
 		{
-			/*
-			if (1 == startLowerLimitCountFlag)
-			{
-				ledBlink(1);
-				ledSwitch(0, 0);
-			}
-			else
-			{
-				ledSwitch(1, 1);
-				ledSwitch(0, 0);
-			}
-			*/
-
-
 			humiSuspend();
 			signalRelayOpen;
 			nonstopWorkFlag = 0;
@@ -524,7 +441,6 @@ void humiCtrl() {
 		{
 			ledStopWorkFlag = 1;
 			ledNormalWorkFlag = 0;
-		//	ledWaterUpperLevelFlag = 0;
 			ledCurrentUpperLimitFlag = 0;
 			ledCurrentLowLimitFlag = 0;
 			humiSuspend();
@@ -532,20 +448,15 @@ void humiCtrl() {
 		}
 		else if(0 == waterValveFailureFlag)		//水阀损坏
 		{
-			//humiSuspend();
 			contactorClose;
 			inletValveClose;
 			drainValveClose;
-			//ledBlink(1);
-			//ledSwitch(0, 0);
 			ledStopWorkFlag = 0;
 			ledNormalWorkFlag = 0;
-		//	ledWaterUpperLevelFlag = 0;
 			ledCurrentUpperLimitFlag = 0;
 			ledCurrentLowLimitFlag = 1;
 			signalRelayOpen;
 		}
-		
 
 		if (1 == keyStatus)
 		{
@@ -561,32 +472,10 @@ void humiCtrl() {
 			}
 		}
 
-
 		if (0 == allowRunFlagDrainWater)		//手动排水时，红绿，红绿交错闪烁
 		{
-			/*
-			switch (ledBlinkFlagTemp4)
-			{
-			case 0: ledSwitch(1, 1);
-				ledSwitch(0, 0);
-				break;
-			case 1:	ledSwitch(1, 0);
-				ledSwitch(0, 1);
-				break;
-			case 2:	ledSwitch(1, 1);
-				ledSwitch(0, 0);
-				break;
-			case 3:	ledSwitch(1, 0);
-				ledSwitch(0, 1);
-				break;
-			default:
-				break;
-			}
-			*/
-
 			ledStopWorkFlag = 0;
 			ledNormalWorkFlag = 0;
-		//	ledWaterUpperLevelFlag = 0;
 			ledDrainWaterHandFlag = 1;
 			ledCurrentUpperLimitFlag = 0;
 			ledCurrentLowLimitFlag = 0;
@@ -600,55 +489,13 @@ void humiCtrl() {
 	}
 	else
 	{	
-		ledStopWorkFlag = 0;
-		ledNormalWorkFlag = 0;
-		ledWaterUpperLevelFlag = 0;
-		ledDrainWaterHandFlag = 0;
-		ledReplaceBucketFlag = 0;
-		ledCurrentUpperLimitFlag = 0;
 		ledDialSwitchErrorFlag = 1;
-		ledCurrentLowLimitFlag = 0;
-
-		//拨码不正常时的灯光
-		/*
-		switch (ledBlinkFlagTemp8)
-		{
-		case 0: ledSwitch(1, 1);
-			ledSwitch(0, 0);
-			break;
-		case 1:	ledSwitch(1, 0);
-			ledSwitch(0, 0);
-			break;
-		case 2: ledSwitch(1, 1);
-			ledSwitch(0, 0);
-			break;
-		case 3:	ledSwitch(1, 0);
-			ledSwitch(0, 0);
-			break;
-		case 4: ledSwitch(0, 0);
-			ledSwitch(0, 1);
-			break;
-		case 5:	ledSwitch(0, 0);
-			ledSwitch(0, 0);
-			break;
-		case 6:	ledSwitch(0, 0);
-			ledSwitch(0, 1);
-			break;
-		case 7:	ledSwitch(0, 0);
-			ledSwitch(0, 0);
-			break;
-		default:
-			break;
-		}
-		*/
 	}
-
 	alarmLampHandle();
 }
 
 
 //额外排水
-
 static void extraDrainWater() {
 
 	extraDrainWaterFlag = 1;								//开始额外排水计时
@@ -858,7 +705,6 @@ void humiCtrlInit() {
 //手动排水
 static void manualDrainWaterScan(int s) {
 
-
 	if (0 == allowRunFlagDrainWater)
 	{
 		contactorClose;
@@ -875,7 +721,6 @@ static void manualDrainWaterScan(int s) {
 	}
 }
 
-
 //排水 S 秒
 static void drainWater(int s) {
 	contactorClose;
@@ -885,21 +730,6 @@ static void drainWater(int s) {
 	drainValveClose;
 	contactorOpen;
 }
-
-//洗桶
-
-/*
-static void cleanBucket() {
-
-	while (0 == waterLevelWarning) {
-
-		drainValveClose;
-		inletValveOpen;
-		contactorOpen;
-	}
-	drainWater(cleanDrainWaterTime);
-}
-*/
 
 /**
 * @brief 指示灯开关
@@ -976,7 +806,4 @@ static void humiSuspend() {
 	contactorClose;
 	inletValveClose;
 	drainValveClose;
-	//greenLedDark();
-	//ledSwitch(0, 0);
-	//ledSwitch(1, 0);
 }
